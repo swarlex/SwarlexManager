@@ -53,3 +53,15 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" Swarlex-Manager.bat Swarlex-Manager.bat.sha256 \
             --title "Swarlex Manager $GITHUB_REF_NAME" --notes-file notes.md
+
+      - name: Refresh the README badges
+        # GitHub caches README images. Wait until shields.io reports the new release (its own cache is
+        # 10 minutes), then purge GitHub's copies so the release and downloads badges show it at once.
+        run: |
+          badge="https://img.shields.io/github/v/release/${GITHUB_REPOSITORY}?label=release&color=3fb950&cacheSeconds=600"
+          for i in $(seq 1 26); do
+            if curl -fsS "$badge" | grep -q ">${GITHUB_REF_NAME}<"; then echo "shields.io shows $GITHUB_REF_NAME"; break; fi
+            sleep 30
+          done
+          curl -fsS "https://github.com/${GITHUB_REPOSITORY}" | grep -o 'https://camo.githubusercontent.com/[^"\]*' | sort -u |
+            while read -r u; do curl -fsS -X PURGE "$u" > /dev/null && echo "purged $u"; done
