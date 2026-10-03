@@ -2,6 +2,12 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.2] - 2026-10-04
+
+- Every screen lines up: the Discord status grid and the Backup menu were one column off.
+- Messages that ran past the edge of the card (mostly warnings and errors) were shortened.
+- System Info shows the Swarlex version, so bug reports say which version they are about.
+
 ## [1.1.1] - 2026-10-04
 
 - Fixed: after an update reopened Swarlex, closing it left the window open at a command prompt. Swarlex
