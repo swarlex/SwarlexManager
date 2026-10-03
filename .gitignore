@@ -1,0 +1,6 @@
+# Local backups and logs never belong in the repository
+*.bak
+*.log
+*.tmp
+*.zip
+*.sha256

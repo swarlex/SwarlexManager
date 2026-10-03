@@ -1,0 +1,6 @@
+*       text=auto
+
+# cmd.exe misreads labels in batch files with Unix line endings, and the published SHA-256
+# must match the exact bytes users run - so the script is always checked out with CRLF.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf

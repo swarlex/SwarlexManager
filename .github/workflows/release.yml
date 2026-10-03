@@ -1,0 +1,55 @@
+name: Release
+
+# Pushing a tag like v1.2.0 publishes Swarlex-Manager.bat and its SHA-256 as a GitHub release.
+# Installed copies of Swarlex find it through the GitHub API and offer the update.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag must match SWX_VERSION in the script
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          ver="$(grep -oP '^set "SWX_VERSION=\K[0-9][0-9.]*' Swarlex-Manager.bat)"
+          echo "tag=$tag script=$ver"
+          if [ "$tag" != "$ver" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match SWX_VERSION=$ver in Swarlex-Manager.bat"
+            exit 1
+          fi
+
+      - name: Script must keep Windows line endings
+        run: |
+          if ! grep -q $'\r$' Swarlex-Manager.bat; then
+            echo "::error::Swarlex-Manager.bat lost its CRLF line endings"
+            exit 1
+          fi
+
+      - name: Checksum
+        run: sha256sum Swarlex-Manager.bat > Swarlex-Manager.bat.sha256 && cat Swarlex-Manager.bat.sha256
+
+      - name: Release notes from CHANGELOG.md
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          awk -v v="$tag" '/^## \[/ { p = index($0, "[" v "]") > 0; next } p' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "Swarlex Manager $GITHUB_REF_NAME" > notes.md; fi
+          {
+            echo
+            echo "**SHA-256:** \`$(cut -d' ' -f1 Swarlex-Manager.bat.sha256)\`"
+          } >> notes.md
+          cat notes.md
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" Swarlex-Manager.bat Swarlex-Manager.bat.sha256 \
+            --title "Swarlex Manager $GITHUB_REF_NAME" --notes-file notes.md
