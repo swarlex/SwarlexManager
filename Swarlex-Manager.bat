@@ -16,8 +16,9 @@ cd /d "%~dp0"
 :: <nul: chcp swallows redirected input, which would break piping keys into Swarlex
 chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
+set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.0"
+set "SWX_VERSION=1.1.1"
 set "SWX_REPO=swarlex/swarlex-manager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -2189,7 +2190,16 @@ exit /b !errorlevel!
 
 :SWX_QUIT
 :: Closes without the goodbye screen because another Swarlex window took over
+call :SWX_END 0
 exit /b 0
+
+:SWX_END
+:: Arg: exit code. A window that runs Swarlex as "cmd /k Swarlex-Manager.bat" (what "start" makes of a
+:: .bat - older update helpers reopened Swarlex like that) would stay open at a prompt after Swarlex ends,
+:: so that window is closed too. A terminal the user opened and ran Swarlex in is left alone.
+set "SWX_CCL=!cmdcmdline!"
+if /i not "!SWX_CCL:/k=!"=="!SWX_CCL!" if /i not "!SWX_CCL:%SWX_SELF_NAME%=!"=="!SWX_CCL!" exit %~1
+exit /b %~1
 
 :: -------------------------------------------------------------
 :: ONE-CLICK REPAIR
@@ -2401,6 +2411,7 @@ echo !INDENT!!C_CYAN!│!C_GRAY!                    Have a wonderful day.       
 echo !INDENT!!C_CYAN!╰──────────────────────────────────────────────────────────────╯!C_RESET!
 echo.
 timeout /t 1 >nul 2>&1
+call :SWX_END 0
 exit /b 0
 
 :: =============================================================
@@ -2636,7 +2647,7 @@ try {
         'pause',
         'exit /b 1',
         ':done',
-        ('start "" "' + $env:SWX_SELF + '"'),
+        ('start "" cmd /d /c ""' + $env:SWX_SELF + '""'),
         '(goto) 2>nul & del "%~f0"'
     )
     [IO.File]::WriteAllText($helper, ($lines -join "`r`n") + "`r`n", (New-Object Text.UTF8Encoding $false))
@@ -4258,7 +4269,7 @@ function Start-DetachedUpgrade($app) {
         ('winget upgrade --id ' + $app.Id + ' -e --accept-package-agreements --accept-source-agreements --disable-interactivity'),
         'echo.',
         'ping -n 3 127.0.0.1 >nul',
-        ('start "" "' + $env:SWX_SELF + '"'),
+        ('start "" cmd /d /c ""' + $env:SWX_SELF + '""'),
         '(goto) 2>nul & del "%~f0"'
     )
     [IO.File]::WriteAllText($script, ($lines -join "`r`n") + "`r`n")

@@ -2,6 +2,12 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.1] - 2026-10-04
+
+- Fixed: after an update reopened Swarlex, closing it left the window open at a command prompt. Swarlex
+  now closes such a window itself, and updates reopen it the same way a double-click does. A terminal you
+  opened yourself is still left open.
+
 ## [1.1.0] - 2026-10-04
 
 - Automatic updates: with the new *Settings > [9] Auto-Update* option (on by default) a new Swarlex
