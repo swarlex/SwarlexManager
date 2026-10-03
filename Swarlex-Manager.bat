@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.2"
+set "SWX_VERSION=1.1.3"
 set "SWX_REPO=swarlex/swarlex-manager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -2475,6 +2475,38 @@ function Clear-CacheFolders([string[]]$folders) {
 # "success / info / warn / error" tags coloured. The output goes to files rather than a pipe: tools such as
 # spicetify start Spotify, which would inherit a pipe and keep it open, so reading it could never finish.
 # True when version $a is newer than version $b ("1.2.10" vs "1.2.9"); anything unparsable is "not newer"
+function Get-LatestRelease([string]$repo, [switch]$Full) {
+    # The GitHub API allows only 60 calls an hour per internet address, so it is used only when the
+    # release notes and file list are needed. The version alone comes from the /releases/latest
+    # redirect of the normal website, and when the API is out of calls the file list comes from the
+    # website as well (without release notes).
+    $ua = 'Swarlex-Manager'
+    function Get-WebTag {
+        $req = [Net.HttpWebRequest]::Create('https://github.com/' + $repo + '/releases/latest')
+        $req.Method = 'HEAD'; $req.AllowAutoRedirect = $false; $req.UserAgent = $ua; $req.Timeout = 15000
+        $res = $req.GetResponse()
+        try { $loc = [string]$res.Headers['Location'] } finally { $res.Close() }
+        if ($loc -notmatch '/releases/tag/([^/?#]+)$') { throw 'GitHub did not report a latest release' }
+        return [Uri]::UnescapeDataString($Matches[1])
+    }
+    if (-not $Full) {
+        try { return [pscustomobject]@{ tag_name = (Get-WebTag); body = ''; assets = @() } } catch { }
+    }
+    try {
+        return Invoke-RestMethod -UseBasicParsing -TimeoutSec 20 -Headers @{ 'User-Agent' = $ua } -Uri ('https://api.github.com/repos/' + $repo + '/releases/latest')
+    } catch {
+        if (-not $Full) { throw }
+        $apiError = $_
+    }
+    try {
+        $tag = Get-WebTag
+        $html = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 20 -UserAgent $ua -Uri ('https://github.com/' + $repo + '/releases/expanded_assets/' + $tag)).Content
+        $prefix = '/' + $repo + '/releases/download/' + $tag + '/'
+        $assets = @([regex]::Matches($html, 'href="(' + [regex]::Escape($prefix) + '[^"]+)"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique |
+            ForEach-Object { [pscustomobject]@{ name = [Uri]::UnescapeDataString($_.Substring($prefix.Length)); browser_download_url = 'https://github.com' + $_ } })
+        return [pscustomobject]@{ tag_name = $tag; body = ''; assets = $assets }
+    } catch { throw $apiError }
+}
 function Test-NewerVersion([string]$a, [string]$b) {
     try { return ([version]($a.Trim().TrimStart('v')) -gt [version]($b.Trim().TrimStart('v'))) } catch { return $false }
 }
@@ -2588,7 +2620,7 @@ $work = Join-Path $env:TEMP 'swarlex-update'
 $helper = Join-Path $env:TEMP 'swarlex-selfupdate-run.cmd'
 try {
     if ($env:SWX_TEST_RELEASE) { $rel = Get-Content -LiteralPath $env:SWX_TEST_RELEASE -Raw | ConvertFrom-Json }
-    else { $rel = Invoke-RestMethod -UseBasicParsing -TimeoutSec 20 -Headers @{ 'User-Agent' = 'Swarlex-Manager' } -Uri ('https://api.github.com/repos/' + $repo + '/releases/latest') }
+    else { $rel = Get-LatestRelease $repo -Full }
 } catch {
     Say ('[x] Could not reach GitHub: ' + $_.Exception.Message) 'Red'
     exit 1
@@ -2954,7 +2986,7 @@ function Get-SpicetifyVersion {
 $current = Get-SpicetifyVersion
 if (-not $current) { Say '[x] Could not read the installed Spicetify version.' 'Red'; exit 1 }
 try {
-    $release = Invoke-RestMethod -UseBasicParsing -Headers @{ 'User-Agent' = 'Swarlex-Manager' } -Uri 'https://api.github.com/repos/spicetify/cli/releases/latest'
+    $release = Get-LatestRelease 'spicetify/cli'
     $latest = ([string]$release.tag_name).TrimStart('v')
 } catch {
     Say ('[x] Could not check for updates: ' + $_.Exception.Message) 'Red'
@@ -3008,7 +3040,7 @@ try {
 try {
     if (Get-Command spicetify -ErrorAction SilentlyContinue) {
         $current = "$(@(& spicetify -v 2>$null) | Select-Object -Last 1)".Trim()
-        $release = Invoke-RestMethod -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Swarlex-Manager' } -Uri 'https://api.github.com/repos/spicetify/cli/releases/latest'
+        $release = Get-LatestRelease 'spicetify/cli'
         $latest = ([string]$release.tag_name).TrimStart('v')
         if ($current -and $latest -and $current -ne $latest) { $found += "spicetify=$latest" }
     }
@@ -3021,7 +3053,7 @@ try {
         if ($vi.ProductName -match 'Millennium') {
             $cur = ([string]$vi.ProductVersion).Trim().TrimStart('v')
             if ($cur) { $found += "millver=$cur" }
-            $rel = Invoke-RestMethod -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Swarlex-Manager' } -Uri 'https://api.github.com/repos/SteamClientHomebrew/Millennium/releases/latest'
+            $rel = Get-LatestRelease 'SteamClientHomebrew/Millennium'
             $latest = ([string]$rel.tag_name).TrimStart('v')
             if ($cur -and $latest -and $cur -ne $latest) { $found += "millennium=$latest" }
         }
@@ -3030,7 +3062,7 @@ try {
 try {
     # swarlex = a newer Swarlex Manager release on GitHub
     if ($env:SWX_REPO -and $env:SWX_VERSION) {
-        $rel = Invoke-RestMethod -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'Swarlex-Manager' } -Uri ('https://api.github.com/repos/' + $env:SWX_REPO + '/releases/latest')
+        $rel = Get-LatestRelease $env:SWX_REPO
         $latest = ([string]$rel.tag_name).TrimStart('v')
         if (Test-NewerVersion $latest $env:SWX_VERSION) { $found += "swarlex=$latest" }
     }
@@ -3373,7 +3405,7 @@ switch ($env:SWX_MILL_MODE) {
             exit 1
         }
         try {
-            $rel = Invoke-RestMethod -UseBasicParsing -TimeoutSec 30 -Headers @{ 'User-Agent' = 'Swarlex-Manager' } -Uri 'https://api.github.com/repos/SteamClientHomebrew/Millennium/releases/latest'
+            $rel = Get-LatestRelease 'SteamClientHomebrew/Millennium' -Full
         } catch {
             Say ('[x] Could not reach GitHub: ' + $_.Exception.Message) 'Red'
             Write-History 'Millennium' 'failed - could not check for updates'
