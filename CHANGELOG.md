@@ -2,6 +2,12 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.3] - 2026-10-04
+
+- Fixed "Could not reach GitHub: (403) Forbidden". The GitHub API allows only 60 calls an hour per
+  internet address; update checks now read the version from the normal GitHub website, which has no such
+  limit, and downloads still work when the API limit is used up.
+
 ## [1.1.2] - 2026-10-04
 
 - Every screen lines up: the Discord status grid and the Backup menu were one column off.
