@@ -4,36 +4,24 @@
 
 **One control center for your Windows client mods - Vencord, Spicetify and Millennium - in a single double-click script.**
 
-[![Latest release](https://img.shields.io/github/v/release/swarlex/swarlex-manager?label=release&color=3fb950)](https://github.com/swarlex/swarlex-manager/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/swarlex/swarlex-manager?label=release&color=3fb950&cacheSeconds=600)](https://github.com/swarlex/swarlex-manager/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/swarlex/swarlex-manager/total?color=61d6d6&cacheSeconds=600)](https://github.com/swarlex/swarlex-manager/releases)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078d6)
+
+### [⬇ Download Swarlex-Manager.bat](https://github.com/swarlex/swarlex-manager/releases/latest/download/Swarlex-Manager.bat)
+
+<sub>Single file · no installer · no admin rights · updates itself</sub>
+
+<br>
+
+<img src="docs/main-menu.svg" alt="Swarlex Manager main menu" width="640">
 
 </div>
 
 Swarlex Manager is a menu-driven console tool that installs, updates, repairs and backs up the mods you run on
 Discord, Spotify and Steam. It is a single `.bat` file with no installer: everything it needs is downloaded
 from the official sources the first time it is needed, and it keeps itself up to date from this repository.
-
-```
-╭──────────────────────────────────────────────────────────────╮
-│                        S W A R L E X                         │
-│                        Control Center                        │
-╰──────────────────────────────────────────────────────────────╯
-  ● Discord   : Running          ● Spotify   : Running
-  ● Vencord   : Patched          ● Spicetify : Applied
-  ● Steam     : Running          ● Millennium: Active
-  ● Privilege : Standard         ● Updates   : Protected
-────────────────────────────────────────────────────────────────
-  [1]  Discord        Patch Discord with Vencord & Plugins
-  [2]  Spotify        Spicetify Mods, Updates & Protection
-  [3]  Steam          Millennium Themes, Plugins & Updates
-
-  [4]  App Updater    Scan & Upgrade Installed Apps [Winget]
-  [5]  Backup         Full Profile Backup & Restore [.zip]
-
-  [6]  Repair         Scan & Fix Common Problems [1-Click]
-  [7]  Settings       Preferences, Admin Mode & Logs
-```
 
 ## Features
 
@@ -58,6 +46,9 @@ from the official sources the first time it is needed, and it keeps itself up to
 - Web **cache cleaning** and a clean **uninstall** that keeps your themes, plugins and settings.
 
 ### Everything else
+
+<p align="center"><img src="docs/repair.svg" alt="One-click Repair" width="640"></p>
+
 - **App Updater** - lists every app with a pending update through `winget` and upgrades them one by one.
 - **Backup & restore** - one `.zip` with your Vencord settings, userplugins, Spicetify and Millennium data.
 - **Safety snapshots** - taken automatically before every update; *Backup > Undo Last Update* rolls back,

@@ -1,0 +1,16 @@
+name: Feature request
+description: An idea for something Swarlex Manager could do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like Swarlex to do?
+      placeholder: "A way to ..."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?
+      description: The situation where you would use it.
