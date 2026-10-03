@@ -2,6 +2,13 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.0] - 2026-10-04
+
+- Automatic updates: with the new *Settings > [9] Auto-Update* option (on by default) a new Swarlex
+  version is installed at start, before anything else runs, and Swarlex reopens as the new version.
+  Turn it off to be asked first, as before.
+- An update that was just installed is no longer announced again until the next background check.
+
 ## [1.0.0] - 2026-10-04
 
 First public release.

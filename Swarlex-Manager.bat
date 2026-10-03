@@ -17,7 +17,7 @@ cd /d "%~dp0"
 chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.0.0"
+set "SWX_VERSION=1.1.0"
 set "SWX_REPO=swarlex/swarlex-manager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -105,6 +105,10 @@ if /i "!CFG_ADMIN!"=="on" if "!IS_ADMIN!"=="0" if not defined SWX_ELEVATED_RUN (
     call :ELEVATE "%~1"
     if not errorlevel 1 goto SWX_QUIT
 )
+
+:: "Auto-Update" setting: a newer release found by an earlier start is installed now, before anything
+:: else runs, and Swarlex restarts as the new version. If it cannot be verified, Swarlex just carries on.
+if /i "!CFG_AUTOUPD!"=="on" call :AUTO_SELF_UPDATE && goto SWX_QUIT
 
 set "UPD_HAD_RESULT="
 if exist "!SWX_UPDATE_FILE!" set "UPD_HAD_RESULT=1"
@@ -225,17 +229,20 @@ exit /b 0
 set "CFG_INTRO=on"
 set "CFG_RELAUNCH=ifopen"
 set "CFG_ADMIN=off"
+set "CFG_AUTOUPD=on"
 if exist "%SWX_SETTINGS%" (
     for /f "usebackq tokens=1,* delims==" %%A in ("%SWX_SETTINGS%") do (
         if /i "%%A"=="intro" set "CFG_INTRO=%%B"
         if /i "%%A"=="relaunch" set "CFG_RELAUNCH=%%B"
         if /i "%%A"=="admin" set "CFG_ADMIN=%%B"
+        if /i "%%A"=="autoupdate" set "CFG_AUTOUPD=%%B"
     )
 )
 :: A hand-edited or damaged value falls back to the default instead of confusing the menus
 if /i not "!CFG_INTRO!"=="off" set "CFG_INTRO=on"
 if /i not "!CFG_RELAUNCH!"=="always" if /i not "!CFG_RELAUNCH!"=="never" set "CFG_RELAUNCH=ifopen"
 if /i not "!CFG_ADMIN!"=="on" set "CFG_ADMIN=off"
+if /i not "!CFG_AUTOUPD!"=="off" set "CFG_AUTOUPD=on"
 exit /b 0
 
 :SAVE_SETTINGS
@@ -244,6 +251,7 @@ if not exist "%SWX_DATA%\" mkdir "%SWX_DATA%" 2>nul
     echo intro=!CFG_INTRO!
     echo relaunch=!CFG_RELAUNCH!
     echo admin=!CFG_ADMIN!
+    echo autoupdate=!CFG_AUTOUPD!
 )
 exit /b 0
 
@@ -525,6 +533,7 @@ if exist "%SWX_UPDATE_FILE%" (
         if /i "%%A"=="swarlex" set "SWX_UPD=%%B"
     )
 )
+if defined SWX_UPD if "!SWX_UPD!"=="!SWX_VERSION!" set "SWX_UPD="
 call :DETECT_STEAM
 :: A waiting update replaces the healthy value of its own row (yellow), so the dashboard never needs an
 :: extra line. Problems such as "Not Patched" or "Broken" stay visible instead - they matter more.
@@ -1933,6 +1942,7 @@ goto MENU_BACKUP
 call :CALC_CENTER
 set "SWX_UPD="
 if exist "%SWX_UPDATE_FILE%" for /f "usebackq tokens=1,* delims==" %%A in ("%SWX_UPDATE_FILE%") do if /i "%%A"=="swarlex" set "SWX_UPD=%%B"
+if defined SWX_UPD if "!SWX_UPD!"=="!SWX_VERSION!" set "SWX_UPD="
 cls
 echo.
 echo.
@@ -2001,13 +2011,18 @@ if defined SWX_UPD (
     set "SU_COL=!C_YELLOW!"
 )
 echo !INDENT!  !C_WHITE![!C_GREEN!8!C_WHITE!]  !C_GREEN!Swarlex Update      !SU_COL!!SU_VAL:~0,17!!SU_DESC!
+if /i "!CFG_AUTOUPD!"=="on" (
+    echo !INDENT!  !C_WHITE![!C_GREEN!9!C_WHITE!]  !C_GREEN!Auto-Update         !C_GREEN!On               !C_GRAY![Install On Start]!C_RESET!
+) else (
+    echo !INDENT!  !C_WHITE![!C_GREEN!9!C_WHITE!]  !C_GREEN!Auto-Update         !C_GRAY!Off              !C_GRAY![Ask First]!C_RESET!
+)
 echo.
 echo !INDENT!  !C_WHITE![!C_GRAY!0!C_WHITE!]  !C_GRAY!Back                !C_WHITE!Return to Main Menu!C_RESET!
 echo.
 echo !INDENT!!C_GRAY!────────────────────────────────────────────────────────────────!C_RESET!
 echo.
 set "ST_CHOICE="
-set /p "ST_CHOICE=!PROMPT_INDENT!!C_YELLOW!›!C_WHITE! Select an option [0-8]: !C_RESET!"
+set /p "ST_CHOICE=!PROMPT_INDENT!!C_YELLOW!›!C_WHITE! Select an option [0-9]: !C_RESET!"
 if not defined ST_CHOICE (
     call :NO_INPUT || goto EXIT_SCRIPT
     goto MENU_SETTINGS
@@ -2033,6 +2048,12 @@ if "!ST_CHOICE!"=="3" (
 if "!ST_CHOICE!"=="5" goto MENU_HISTORY
 if "!ST_CHOICE!"=="7" goto MENU_SYSINFO
 if "!ST_CHOICE!"=="8" goto ACTION_SELF_UPDATE
+if "!ST_CHOICE!"=="9" (
+    if /i "!CFG_AUTOUPD!"=="on" (set "CFG_AUTOUPD=off") else (set "CFG_AUTOUPD=on")
+    call :SAVE_SETTINGS
+    call :DLOG INFO "Auto-Update set to !CFG_AUTOUPD!"
+    goto MENU_SETTINGS
+)
 if "!ST_CHOICE!"=="6" (
     if not exist "!SWX_LOGFILE!" type nul > "!SWX_LOGFILE!"
     start "" notepad.exe "!SWX_LOGFILE!"
@@ -2061,6 +2082,30 @@ echo.
 call :RUN_PS HISTORYVIEW
 call :CENTER_PAUSE
 goto MENU_SETTINGS
+
+:AUTO_SELF_UPDATE
+:: Returns 0 only when the new version is downloaded, verified and about to replace this window
+set "SWX_UPD="
+if exist "!SWX_UPDATE_FILE!" for /f "usebackq tokens=1,* delims==" %%A in ("!SWX_UPDATE_FILE!") do if /i "%%A"=="swarlex" set "SWX_UPD=%%B"
+if not defined SWX_UPD exit /b 1
+if "!SWX_UPD!"=="!SWX_VERSION!" exit /b 1
+cls
+echo.
+echo.
+echo !INDENT!  !C_CYAN![*] Updating Swarlex v!SWX_VERSION! to v!SWX_UPD!...!C_RESET!
+echo.
+set "SWX_SU_MODE=install"
+call :RUN_PS SELFUPDATE
+set "SU_RC=!errorlevel!"
+if "!SU_RC!"=="10" exit /b 1
+if not "!SU_RC!"=="0" (
+    echo !INDENT!  !C_GRAY!Continuing with v!SWX_VERSION! - you can retry from Settings, [8] Swarlex Update.!C_RESET!
+    ping -n 5 127.0.0.1 >nul 2>&1
+    exit /b 1
+)
+ping -n 2 127.0.0.1 >nul 2>&1
+start "" /min cmd /d /c "%TEMP%\swarlex-selfupdate-run.cmd"
+exit /b 0
 
 :ACTION_SELF_UPDATE
 echo.
@@ -2598,6 +2643,8 @@ try {
     Say ('[+] v' + $latest + ' downloaded and verified - Swarlex restarts with it in a moment.') 'Green'
     Say ('    The current version is kept as ' + $previous) 'DarkGray'
     Write-History 'Swarlex update' ('v' + $cur + ' -> v' + $latest)
+    # The new version starts with a clean slate instead of announcing the update it just installed
+    if ($env:SWX_UPDATE_FILE) { Remove-Item -LiteralPath $env:SWX_UPDATE_FILE -Force -ErrorAction SilentlyContinue }
     exit 0
 } catch {
     Say ('[x] Update failed: ' + $_.Exception.Message) 'Red'
@@ -4115,7 +4162,7 @@ try {
 
     # ---------------- Swarlex ----------------
     Section 'SWARLEX'
-    $valid = @{ intro = @('on', 'off'); relaunch = @('ifopen', 'always', 'never'); admin = @('on', 'off') }
+    $valid = @{ intro = @('on', 'off'); relaunch = @('ifopen', 'always', 'never'); admin = @('on', 'off'); autoupdate = @('on', 'off') }
     $badKeys = @()
     if (Test-Path -LiteralPath $env:SWX_SETTINGS) {
         foreach ($l in [IO.File]::ReadAllLines($env:SWX_SETTINGS)) {

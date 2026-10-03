@@ -65,7 +65,8 @@ from the official sources the first time it is needed, and it keeps itself up to
 - **One-click Repair** - finds and fixes what client updates tend to break: a Discord update that removed
   Vencord, a Spotify update that removed Spicetify, a Steam update that removed Millennium's loader, stuck git
   state, leftover temp files and more.
-- **Self-update** - checks this repository on start and updates itself from *Settings > Swarlex Update*.
+- **Self-update** - checks this repository on start and keeps itself up to date, automatically or after
+  asking you first.
 - **Logs & history**, **system info** for troubleshooting, optional **start as administrator**.
 
 ## Requirements
@@ -97,10 +98,15 @@ itself before installing an update.
 
 ## Updating
 
-Swarlex checks for a new version in the background every time it starts. When one is available, the
-*Settings* entry on the main menu says so - open *Settings > [8] Swarlex Update* to read what changed and
-install it. Swarlex downloads the new version, verifies its SHA-256, swaps itself and reopens. The previous
-version is kept as `%APPDATA%\Swarlex Manager\Swarlex-Manager.previous.bat`.
+Swarlex checks for a new version in the background every time it starts.
+
+- **Auto-Update on** (the default): a new version found by one start is installed at the next start,
+  before anything else runs - Swarlex downloads it, verifies its SHA-256, swaps itself and reopens.
+- **Auto-Update off** (*Settings > [9]*): the *Settings* entry on the main menu announces the new version,
+  and *Settings > [8] Swarlex Update* shows what changed and installs it when you confirm.
+
+An update that cannot be verified is never installed. The previous version is kept as
+`%APPDATA%\Swarlex Manager\Swarlex-Manager.previous.bat`.
 
 ## Command line
 
