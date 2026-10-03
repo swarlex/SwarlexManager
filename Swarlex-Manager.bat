@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.1"
+set "SWX_VERSION=1.1.2"
 set "SWX_REPO=swarlex/swarlex-manager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -816,7 +816,7 @@ if errorlevel 1 (
     echo !INDENT!!C_RED!╰──────────────────────────────────────────────────────────────╯!C_RESET!
     echo.
     echo !INDENT!  !C_RED![^^!] Windows Package Manager [winget] is not installed.!C_RESET!
-    echo !INDENT!  !C_GRAY!Install "App Installer" from Microsoft Store to use App Updater.!C_RESET!
+    echo !INDENT!  !C_GRAY!Install "App Installer" from the Microsoft Store first.!C_RESET!
     echo.
     call :CENTER_PAUSE
     goto MAIN_MENU
@@ -854,7 +854,7 @@ echo !INDENT!!C_CYAN!╭──────────────────�
 echo !INDENT!!C_CYAN!│!C_WHITE!                  DISCORD ^& VENCORD CONTROLS                  !C_CYAN!│!C_RESET!
 echo !INDENT!!C_CYAN!╰──────────────────────────────────────────────────────────────╯!C_RESET!
 echo.
-echo !INDENT!  !DISCORD_DOT! Discord   : !DISCORD_TXT!    !VENCORD_DOT! Vencord   : !VENCORD_TXT!
+echo !INDENT!  !DISCORD_DOT! Discord   : !DISCORD_TXT!   !VENCORD_DOT! Vencord   : !VENCORD_TXT!
 if !FLAVOR_COUNT! GTR 1 (
     set "TL_DISP=!TARGET_LABEL!                "
     set "TL_DISP=!TL_DISP:~0,16!"
@@ -944,7 +944,7 @@ echo.
 echo !INDENT!  !SPOTIFY_DOT! Spotify   : !SPOTIFY_TXT!   !SPICETIFY_DOT! Spicetify : !SPICETIFY_TXT!
 echo !INDENT!  !C_WHITE!●!C_WHITE! Theme     : !C_CYAN!!SP_THEME_PADDED!!C_WHITE!   !UPDATE_DOT! Updates   : !UPDATE_TXT!
 if defined SPICE_UPD echo !INDENT!  !C_YELLOW!● Spicetify !SPICE_UPD! is available - use [2] Update Spicetify!C_RESET!
-if defined SPICE_OFF echo !INDENT!  !C_YELLOW!● Spicetify is not applied to Spotify - use [1] Apply Spicetify!C_RESET!
+if defined SPICE_OFF echo !INDENT!  !C_YELLOW!● Spicetify is not applied - use [1] Apply Spicetify!C_RESET!
 if "!IS_STORE_SPOTIFY!"=="1" echo !INDENT!  !C_RED![^^!] Notice: Microsoft Store Spotify detected.!C_RESET!
 echo.
 echo !INDENT!!C_GRAY!────────────────────────────────────────────────────────────────!C_RESET!
@@ -1249,10 +1249,10 @@ echo !INDENT!  !C_GRAY!Path: !VENCORD_DIR!\src\userplugins!C_RESET!
 echo.
 echo !INDENT!!C_GRAY!────────────────────────────────────────────────────────────────!C_RESET!
 echo.
-echo !INDENT!  !C_WHITE![!C_GREEN!1!C_WHITE!]  !C_GREEN!Install Plugin!C_WHITE!      Install from a GitHub Repo or Folder Link!C_RESET!
+echo !INDENT!  !C_WHITE![!C_GREEN!1!C_WHITE!]  !C_GREEN!Install Plugin!C_WHITE!      From a GitHub Repo, Folder or File!C_RESET!
 echo !INDENT!  !C_WHITE![!C_MAGENTA!2!C_WHITE!]  !C_MAGENTA!Manage Plugins!C_WHITE!      Turn Plugins On / Off or Delete Them!C_RESET!
 echo.
-echo !INDENT!  !C_WHITE![!C_YELLOW!3!C_WHITE!]  !C_YELLOW!Open Folder!C_WHITE!         Open userplugins Directory in Explorer!C_RESET!
+echo !INDENT!  !C_WHITE![!C_YELLOW!3!C_WHITE!]  !C_YELLOW!Open Folder!C_WHITE!         Open userplugins in Explorer!C_RESET!
 echo.
 echo !INDENT!  !C_WHITE![!C_GRAY!0!C_WHITE!]  !C_GRAY!Back!C_WHITE!                Return to Discord Menu!C_RESET!
 echo.
@@ -1316,7 +1316,7 @@ call :SPICETIFY apply !SPICETIFY_FLAGS!
 if errorlevel 1 call :SPICETIFY backup apply !SPICETIFY_FLAGS!
 if errorlevel 1 (
     echo.
-    echo !INDENT!  !C_RED![ERROR] Failed to apply Spicetify. Make sure Spotify is closed.!C_RESET!
+    echo !INDENT!  !C_RED![ERROR] Spicetify could not be applied - close Spotify first.!C_RESET!
     call :RESTART_SPOTIFY_PROC
 ) else (
     set "RC=0"
@@ -1395,7 +1395,7 @@ if exist "!UPD_DIR!" (
 if "!IS_LOCKED!"=="1" goto TOGGLE_IS_LOCKED
 
 :TOGGLE_IS_UNLOCKED
-echo !INDENT!  !C_YELLOW![*] Spotify auto-updates are UNLOCKED [Risky - May break mods].!C_RESET!
+echo !INDENT!  !C_YELLOW![*] Spotify auto-updates are UNLOCKED [may break mods].!C_RESET!
 echo !INDENT!  !C_CYAN!Do you want to lock updates to protect Spicetify? [Y/N]!C_RESET!
 echo.
 set "TOGGLE_CHOICE="
@@ -1432,7 +1432,7 @@ if exist "%UPD_DIR%\" (
     echo !INDENT!  !C_GREEN![+] Spotify update lock REMOVED.!C_RESET!
     call :LOG "Update Guard" "Spotify updates unlocked"
 ) else (
-    echo !INDENT!  !C_RED![ERROR] Could not remove the update lock - try running as Administrator.!C_RESET!
+    echo !INDENT!  !C_RED![ERROR] Could not remove the update lock - admin rights needed.!C_RESET!
     call :DLOG ERROR "Update Guard: could not remove the Spotify update lock [admin=!IS_ADMIN!]"
     set "NEED_ADMIN=1"
 )
@@ -1441,7 +1441,7 @@ exit /b 0
 :DO_LOCK_UPDATES
 call :SPINNER_STEP "Enforcing update guard..."
 if not exist "%LOCALAPPDATA%\Spotify\" (
-    echo !INDENT!  !C_RED![ERROR] Spotify data folder not found - launch Spotify once first.!C_RESET!
+    echo !INDENT!  !C_RED![ERROR] No Spotify data folder - start Spotify once first.!C_RESET!
     exit /b 1
 )
 call :KILL_SPOTIFY
@@ -1453,13 +1453,13 @@ if exist "%UPD_DIR%" (
 )
 type nul > "%UPD_DIR%" 2>nul
 if not exist "%UPD_DIR%" (
-    echo !INDENT!  !C_RED![ERROR] Could not create the update lock - try running as Administrator.!C_RESET!
+    echo !INDENT!  !C_RED![ERROR] Could not create the update lock - admin rights needed.!C_RESET!
     call :DLOG ERROR "Update Guard: could not create the Spotify update lock [admin=!IS_ADMIN!]"
     set "NEED_ADMIN=1"
     exit /b 1
 )
 if exist "%UPD_DIR%\" (
-    echo !INDENT!  !C_RED![ERROR] The Update folder is in use - close Spotify and try again.!C_RESET!
+    echo !INDENT!  !C_RED![ERROR] The Update folder is in use - close Spotify first.!C_RESET!
     call :DLOG ERROR "Update Guard: the Spotify Update folder is in use"
     exit /b 1
 )
@@ -1471,7 +1471,7 @@ exit /b 0
 
 :ACTION_SPICETIFY_CLEAN_CACHE
 echo.
-echo !INDENT!  !C_CYAN![i] Clears Spotify's streaming and image cache. Downloaded songs are kept.!C_RESET!
+echo !INDENT!  !C_CYAN![i] Clears Spotify's cache. Downloaded songs are kept.!C_RESET!
 set "CONFIRM_CACHE="
 set /p "CONFIRM_CACHE=!PROMPT_INDENT!Clean Spotify cache? [Y/N]: "
 if /i "!CONFIRM_CACHE!"=="yes" set "CONFIRM_CACHE=y"
@@ -1530,9 +1530,9 @@ if "!MILL_PLUGINS!"=="1" set "MA_DISP=1 plugin"
 if "!MILL_THEMES!"=="1" (set "MA_DISP=!MA_DISP!, 1 theme") else set "MA_DISP=!MA_DISP!, !MILL_THEMES! themes"
 echo !INDENT!  !STEAM_DOT! Steam     : !STEAM_TXT!   !MILL_DOT! Millennium: !MILL_TXT!
 echo !INDENT!  !C_WHITE!●!C_RESET! Version   : !C_CYAN!!MV_DISP:~0,14!!C_RESET!   !C_WHITE!●!C_RESET! Add-ons   : !C_CYAN!!MA_DISP!!C_RESET!
-if not exist "!STEAM_DIR!\steam.exe" echo !INDENT!  !C_RED![^^!] Steam was not found - install it from store.steampowered.com!C_RESET!
+if not exist "!STEAM_DIR!\steam.exe" echo !INDENT!  !C_RED![^^!] Steam was not found - get it from steampowered.com!C_RESET!
 if defined MILL_UPD echo !INDENT!  !C_YELLOW!● Millennium v!MILL_UPD! is available - use [1] Install / Update!C_RESET!
-if "!MILL_STATE!"=="broken" echo !INDENT!  !C_YELLOW!● Millennium is damaged - use [1] Install / Update to repair it!C_RESET!
+if "!MILL_STATE!"=="broken" echo !INDENT!  !C_YELLOW!● Millennium is damaged - [1] Install / Update repairs it!C_RESET!
 echo.
 echo !INDENT!!C_GRAY!────────────────────────────────────────────────────────────────!C_RESET!
 echo.
@@ -1540,7 +1540,7 @@ echo !INDENT!  !C_WHITE![!C_GREEN!1!C_WHITE!]  !C_GREEN!Install / Update!C_WHITE
 echo !INDENT!  !C_WHITE![!C_MAGENTA!2!C_WHITE!]  !C_MAGENTA!Restart Steam!C_WHITE!       Reload Steam to Apply Changes!C_RESET!
 echo.
 echo !INDENT!  !C_WHITE![!C_YELLOW!3!C_WHITE!]  !C_YELLOW!Manage Add-ons!C_WHITE!      Plugins On / Off, Pick Theme, Delete!C_RESET!
-echo !INDENT!  !C_WHITE![!C_YELLOW!4!C_WHITE!]  !C_YELLOW!Open Folder!C_WHITE!         Open the millennium Folder in Explorer!C_RESET!
+echo !INDENT!  !C_WHITE![!C_YELLOW!4!C_WHITE!]  !C_YELLOW!Open Folder!C_WHITE!         Open the millennium Folder!C_RESET!
 echo.
 echo !INDENT!  !C_WHITE![!C_CYAN!5!C_WHITE!]  !C_CYAN!Clean Cache!C_WHITE!         Clear Steam Web Cache - Login Is Kept!C_RESET!
 echo !INDENT!  !C_WHITE![!C_RED!6!C_WHITE!]  !C_RED!Uninstall!C_WHITE!           Remove Millennium, Keep Your Add-ons!C_RESET!
@@ -1609,7 +1609,7 @@ exit /b !MILL_RC!
 :ACTION_MILL_MANAGE
 if not exist "!STEAM_DIR!\millennium\" (
     echo.
-    echo !INDENT!  !C_YELLOW![^^!] Millennium is not installed - use [1] Install / Update first.!C_RESET!
+    echo !INDENT!  !C_YELLOW![^^!] Millennium is not installed - use [1] Install / Update.!C_RESET!
     call :CENTER_PAUSE
     goto MENU_STEAM
 )
@@ -1646,7 +1646,7 @@ goto MENU_STEAM
 
 :ACTION_STEAM_CLEAN_CACHE
 echo.
-echo !INDENT!  !C_CYAN![i] Clears Steam's web cache [store, library and Millennium UI]. Login is kept.!C_RESET!
+echo !INDENT!  !C_CYAN![i] Clears Steam's web cache. Your login is kept.!C_RESET!
 set "CONFIRM_SCACHE="
 set /p "CONFIRM_SCACHE=!PROMPT_INDENT!Clean Steam cache? [Y/N]: "
 if /i "!CONFIRM_SCACHE!"=="yes" set "CONFIRM_SCACHE=y"
@@ -1660,7 +1660,7 @@ goto MENU_STEAM
 
 :ACTION_MILL_UNINSTALL
 echo.
-echo !INDENT!  !C_YELLOW![^^!] Removes Millennium from Steam. Your themes, plugins and settings are kept.!C_RESET!
+echo !INDENT!  !C_YELLOW![^^!] Removes Millennium. Themes, plugins and settings stay.!C_RESET!
 set "CONFIRM_MUN="
 set /p "CONFIRM_MUN=!PROMPT_INDENT!Uninstall Millennium? [Y/N]: "
 if /i "!CONFIRM_MUN!"=="yes" set "CONFIRM_MUN=y"
@@ -1765,10 +1765,10 @@ echo !INDENT!  !C_GRAY!Archive Vencord, userplugins, Spicetify ^& Millennium dat
 echo.
 echo !INDENT!!C_GRAY!────────────────────────────────────────────────────────────────!C_RESET!
 echo.
-echo !INDENT!  !C_WHITE![!C_GREEN!1!C_WHITE!]  !C_GREEN!Backup Profile!C_WHITE!       Create Desktop .zip Archive!C_RESET!
-echo !INDENT!  !C_WHITE![!C_YELLOW!2!C_WHITE!]  !C_YELLOW!Restore Profile!C_WHITE!      Restore from Latest Desktop .zip!C_RESET!
+echo !INDENT!  !C_WHITE![!C_GREEN!1!C_WHITE!]  !C_GREEN!Backup Profile!C_WHITE!      Create Desktop .zip Archive!C_RESET!
+echo !INDENT!  !C_WHITE![!C_YELLOW!2!C_WHITE!]  !C_YELLOW!Restore Profile!C_WHITE!     Restore from Latest Desktop .zip!C_RESET!
 echo.
-echo !INDENT!  !C_WHITE![!C_RED!3!C_WHITE!]  !C_RED!Undo Last Update!C_WHITE!     Roll Back from a Safety Snapshot!C_RESET!
+echo !INDENT!  !C_WHITE![!C_RED!3!C_WHITE!]  !C_RED!Undo Last Update!C_WHITE!    Roll Back from a Safety Snapshot!C_RESET!
 echo.
 echo !INDENT!  !C_WHITE![!C_GRAY!0!C_WHITE!]  !C_GRAY!Back!C_WHITE!                Return to Main Menu!C_RESET!
 echo.
@@ -1812,7 +1812,7 @@ if not defined LATEST_ZIP (
     goto FINISH_BACKUP
 )
 echo !INDENT!  !C_CYAN![*] Found latest backup: !LATEST_ZIP!!C_RESET!
-echo !INDENT!  !C_YELLOW![^^!] Current Vencord, Spicetify and Millennium data will be replaced.!C_RESET!
+echo !INDENT!  !C_YELLOW![^^!] This replaces your Vencord, Spicetify and Millennium data.!C_RESET!
 echo.
 set "DO_REST="
 set /p "DO_REST=!PROMPT_INDENT!Proceed with restore? [Y/N]: "
@@ -1860,9 +1860,9 @@ if not defined SNAP_ZIP (
 for %%Z in ("!SNAP_ZIP!") do set "SNAP_NAME=%%~nZ"
 for /f "delims=_" %%K in ("!SNAP_NAME!") do set "SNAP_KIND=%%K"
 echo.
-if /i "!SNAP_KIND!"=="vencord" echo !INDENT!  !C_YELLOW![^^!] Vencord settings, userplugins and source go back to that point.!C_RESET!
-if /i "!SNAP_KIND!"=="spicetify" echo !INDENT!  !C_YELLOW![^^!] Spicetify settings go back to that point - the CLI version stays.!C_RESET!
-if /i "!SNAP_KIND!"=="millennium" echo !INDENT!  !C_YELLOW![^^!] Millennium settings, plugins and themes go back to that point.!C_RESET!
+if /i "!SNAP_KIND!"=="vencord" echo !INDENT!  !C_YELLOW![^^!] Vencord settings, plugins and source go back to then.!C_RESET!
+if /i "!SNAP_KIND!"=="spicetify" echo !INDENT!  !C_YELLOW![^^!] Spicetify settings go back to then; the CLI stays as is.!C_RESET!
+if /i "!SNAP_KIND!"=="millennium" echo !INDENT!  !C_YELLOW![^^!] Millennium settings, plugins and themes go back to then.!C_RESET!
 set "DO_UNDO="
 set /p "DO_UNDO=!PROMPT_INDENT!Roll back now? [Y/N]: "
 if /i "!DO_UNDO!"=="yes" set "DO_UNDO=y"
@@ -1909,7 +1909,7 @@ if /i "!CUR_HEAD!"=="!ROLL_HEAD!" exit /b 0
 git -C "!VENCORD_DIR!" reset -q --keep !ROLL_HEAD!
 if errorlevel 1 (
     set "RC=1"
-    echo !INDENT!  !C_RED![ERROR] The Vencord source could not be rolled back - you have local edits that conflict.!C_RESET!
+    echo !INDENT!  !C_RED![ERROR] Vencord source not rolled back - local edits conflict.!C_RESET!
     call :LOG "Undo update" "failed - Vencord source has conflicting local edits"
     exit /b 1
 )
@@ -2100,7 +2100,7 @@ call :RUN_PS SELFUPDATE
 set "SU_RC=!errorlevel!"
 if "!SU_RC!"=="10" exit /b 1
 if not "!SU_RC!"=="0" (
-    echo !INDENT!  !C_GRAY!Continuing with v!SWX_VERSION! - you can retry from Settings, [8] Swarlex Update.!C_RESET!
+    echo !INDENT!  !C_GRAY!Staying on v!SWX_VERSION! - retry from Settings, [8].!C_RESET!
     ping -n 5 127.0.0.1 >nul 2>&1
     exit /b 1
 )
@@ -2172,7 +2172,7 @@ call :DLOG INFO "Requesting Administrator rights [UAC]"
 powershell -NoProfile -NonInteractive -Command "try { Start-Process -FilePath $env:SWX_SELF -ArgumentList $env:SWX_ELEVATE_ARG.Trim() -Verb RunAs -ErrorAction Stop; exit 0 } catch { exit 1 }"
 if errorlevel 1 (
     call :DLOG WARN "Administrator request was declined - continuing with standard rights"
-    echo !INDENT!  !C_YELLOW![^^!] Administrator request was declined - continuing with standard rights.!C_RESET!
+    echo !INDENT!  !C_YELLOW![^^!] Admin request declined - continuing with standard rights.!C_RESET!
     exit /b 1
 )
 call :DLOG INFO "Elevated window started - this window closes"
@@ -2929,16 +2929,16 @@ switch ($outcome) {
         Say ('[!] Disabled ' + $bad.Count + ' broken userplugin(s): ' + ($bad -join ', ')) 'Yellow'
         Write-History 'Plugin check' ('turned off broken: ' + ($bad -join ', '))
         Say ('    Moved to ' + $off) 'DarkGray'
-        Say '    Turn it back on later from Plugin Hub > [2] Manage Plugins.' 'DarkGray'
+        Say '    Turn it back on in Plugin Hub > [2] Manage Plugins.' 'DarkGray'
         exit 0
     }
     'core' {
-        Say '[x] The build fails even without any userplugins - the problem is in Vencord itself.' 'Red'
+        Say '[x] Vencord itself fails to build, even without userplugins.' 'Red'
         Say '    Try [2] Update Vencord. Your plugins were not changed.' 'Yellow'
         exit 1
     }
     default {
-        Say '[x] Could not find a single userplugin to blame. Your plugins were not changed.' 'Red'
+        Say '[x] No single plugin to blame - none of them were changed.' 'Red'
         exit 1
     }
 }
@@ -3109,7 +3109,7 @@ if ($gh.Success) {
     $cloneUrl = $url
     $name = ($url.TrimEnd('/') -split '[/:]')[-1] -replace '\.git$', ''
 } else {
-    Say '[x] That is not a link. Example: https://github.com/user/plugin-name' 'Red'
+    Say '[x] Not a link. Example: https://github.com/user/plugin' 'Red'
     exit 1
 }
 if (-not $name -or $name.StartsWith('.') -or $name.StartsWith('_')) { Say '[x] Could not work out a plugin name from that link.' 'Red'; exit 1 }
@@ -3174,9 +3174,9 @@ if (-not (Test-PluginRoot $target)) {
         Remove-Item -LiteralPath $target -Recurse -Force
         if ($cands.Count -gt 1) {
             Say ('[x] That repository contains several plugins: ' + (($cands | ForEach-Object { $_.Name }) -join ', ')) 'Red'
-            Say '    Paste the link to one of them instead (.../tree/main/<folder>).' 'Yellow'
+            Say '    Paste the link of one of them (.../tree/main/<folder>).' 'Yellow'
         } else {
-            Say '[x] No Vencord plugin (index.ts / index.tsx) was found at that link.' 'Red'
+            Say '[x] No Vencord plugin (index.ts/.tsx) found at that link.' 'Red'
         }
         exit 1
     }
@@ -3367,7 +3367,7 @@ switch ($env:SWX_MILL_MODE) {
     'prepare' {
         $installed = Get-MillVersion
         if (-not $installed -and (Test-Path -LiteralPath $loader)) {
-            Say '[x] wsock32.dll in the Steam folder belongs to another mod - not overwriting it.' 'Red'
+            Say '[x] Steam\wsock32.dll belongs to another mod - left alone.' 'Red'
             Say '    Remove that mod first, then run Install / Update again.' 'Yellow'
             Write-History 'Millennium' 'failed - wsock32.dll is used by another mod'
             exit 1
@@ -3417,7 +3417,7 @@ switch ($env:SWX_MILL_MODE) {
             }
             [IO.File]::WriteAllText((Join-Path $stage 'root.txt'), $dll.DirectoryName)
             [IO.File]::WriteAllText((Join-Path $stage 'version.txt'), $latest)
-            Say ('[+] Download verified: SHA-256 matches, every file is signed by ' + $signer + '.') 'Green'
+            Say ('[+] Verified: SHA-256 and signatures (' + $signer + ').') 'Green'
             exit 0
         } catch {
             Say ('[x] ' + $_.Exception.Message) 'Red'
@@ -3702,7 +3702,7 @@ $dir = Join-Path $env:SWX_DATA 'snapshots'
 $names = @{ vencord = 'Vencord update'; spicetify = 'Spicetify update'; millennium = 'Millennium change' }
 $snaps = @(Get-ChildItem -LiteralPath $dir -Filter '*.zip' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 12)
 if ($snaps.Count -eq 0) {
-    Say '[-] No safety snapshots yet. One is saved automatically before every update.' 'DarkGray'
+    Say '[-] No snapshots yet - one is taken before every update.' 'DarkGray'
     exit 1
 }
 Write-Host ($ind + '  Saved automatically right before these changes - newest first:') -ForegroundColor DarkGray
@@ -3736,7 +3736,7 @@ Add-Row 'SYSTEM' 'Windows' $(if ($os) { $os.Caption.Replace('Microsoft ', '') + 
 Add-Row 'SYSTEM' 'Privilege' $(if ($env:IS_ADMIN -eq '1') { 'Administrator' } else { 'Standard' })
 Add-Row 'SYSTEM' 'PowerShell' ([string]$PSVersionTable.PSVersion)
 $self = Get-Item -LiteralPath $env:SWX_SELF
-Add-Row 'SYSTEM' 'Swarlex' ($self.LastWriteTime.ToString('yyyy-MM-dd HH:mm') + ', ' + [math]::Round($self.Length / 1KB) + ' KB')
+Add-Row 'SYSTEM' 'Swarlex' ('v' + $env:SWX_VERSION + ' (' + $self.LastWriteTime.ToString('yyyy-MM-dd') + ')' + $(if ($env:CFG_AUTOUPD -eq 'off') { ', auto-update off' } else { '' }))
 
 foreach ($f in 'Discord', 'DiscordPTB', 'DiscordCanary', 'DiscordDevelopment') {
     $app = Get-ChildItem -LiteralPath (Join-Path $env:LOCALAPPDATA $f) -Directory -Filter 'app-*' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
@@ -3896,7 +3896,7 @@ if ($snap) {
     }
     if ($parts.Count -eq 0) { exit 0 }
     if ($unchanged) {
-        Say '[-] Nothing changed since the last safety snapshot - keeping that one.' 'DarkGray'
+        Say '[-] Nothing changed since the last snapshot - kept that one.' 'DarkGray'
         exit 0
     }
     foreach ($old in @(Get-ChildItem -LiteralPath $snapDir -Filter ($kind + '_*.zip') | Sort-Object Name -Descending | Select-Object -Skip 5)) {
@@ -3913,7 +3913,7 @@ if ($failed) {
     if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
     exit 1
 }
-if ($parts.Count -eq 0) { Say '[*] No Vencord, userplugin, Spicetify or Millennium data found to back up.' 'Yellow'; exit 1 }
+if ($parts.Count -eq 0) { Say '[*] Found no Vencord, Spicetify or Millennium data to back up.' 'Yellow'; exit 1 }
 $mb = [math]::Round((Get-Item -LiteralPath $zip).Length / 1MB, 1)
 Say ('[+] Backed up: ' + ($parts -join ', ')) 'Green'
 Write-History 'Backup' ('saved ' + (Split-Path $zip -Leaf) + ' [' + $mb + ' MB]')
@@ -3934,7 +3934,7 @@ try {
     if ($env:SWX_VENCORD_DIR -and (Test-Path -LiteralPath (Join-Path $env:SWX_VENCORD_DIR 'src'))) {
         $targets['userplugins'] = Join-Path $env:SWX_VENCORD_DIR 'src\userplugins'
     } elseif (Test-Path -LiteralPath (Join-Path $stage 'userplugins')) {
-        Say '[!] Skipped userplugins - the Vencord source folder was not found.' 'Yellow'
+        Say '[!] Skipped userplugins - no Vencord source folder found.' 'Yellow'
     }
     if ($env:SWX_STEAM_DIR -and (Test-Path -LiteralPath (Join-Path $env:SWX_STEAM_DIR 'steam.exe'))) {
         $targets['millennium'] = Join-Path $env:SWX_STEAM_DIR 'millennium'
@@ -3958,10 +3958,10 @@ try {
 }
 $label = if ($env:SWX_RESTORE_LABEL) { $env:SWX_RESTORE_LABEL } else { 'Restore backup' }
 if ($failed) { Say ('[x] Restore failed: ' + $failed) 'Red'; Write-History $label 'failed'; exit 1 }
-if ($done.Count -eq 0) { Say '[x] The backup contains no Vencord, userplugin, Spicetify or Millennium data.' 'Red'; exit 1 }
+if ($done.Count -eq 0) { Say '[x] The backup has no Vencord, Spicetify or Millennium data.' 'Red'; exit 1 }
 Say ('[+] Restored: ' + ($done -join ', ')) 'Green'
 Write-History $label (($done -join ', ') + ' from ' + (Split-Path $env:SWX_ZIP -Leaf))
-if ($done -contains 'userplugins' -and -not $env:SWX_ROLLBACK_FILE) { Say '    Run Patch Discord to rebuild Vencord with the restored plugins.' 'DarkGray' }
+if ($done -contains 'userplugins' -and -not $env:SWX_ROLLBACK_FILE) { Say '    Run Patch Discord to build the restored plugins in.' 'DarkGray' }
 exit 0
 ::SWX_PS_END
 
@@ -4210,7 +4210,7 @@ Write-Host ''
 if ($script:fixable -eq 0 -and $script:manual -eq 0) {
     Say '[+] No problems found.' 'Green'
 } elseif ($script:fixable -eq 0) {
-    Say ('[!] Nothing to fix automatically - see the red [x] lines above.') 'Yellow'
+    Say ('[!] Nothing to fix automatically - see the red [x] lines.') 'Yellow'
 } else {
     Say ('[*] ' + $script:fixable + ' problem(s) can be fixed automatically.') 'Cyan'
     if ($script:manual -gt 0) { Say '    The red [x] lines need you - Repair cannot fix those.' 'DarkGray' }
