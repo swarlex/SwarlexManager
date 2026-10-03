@@ -160,6 +160,14 @@ Swarlex Manager is an independent project and is not affiliated with or endorsed
 Valve, Vencord, Spicetify or Millennium. Client modifications may be against those services' terms of
 service. Use it at your own risk.
 
+## Credits
+
+Swarlex Manager is made by [swarlex](https://github.com/swarlex), built together with [Claude](https://claude.ai) by Anthropic
+in [Claude Code](https://claude.com/claude-code).
+
+It stands on the shoulders of [Vencord](https://github.com/Vendicated/Vencord), [Spicetify](https://github.com/spicetify/cli),
+[Millennium](https://github.com/SteamClientHomebrew/Millennium) and [winget](https://github.com/microsoft/winget-cli).
+
 ## License
 
 Swarlex Manager is free software, released under the [GNU General Public License v3.0](LICENSE) or (at your
