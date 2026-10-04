@@ -56,7 +56,7 @@ jobs:
 
       - name: Refresh the README badges
         # GitHub caches README images. Wait until shields.io reports the new release (its own cache is
-        # 10 minutes), then purge GitHub's copies so the release and downloads badges show it at once.
+        # 10 minutes), then purge GitHub's copies so the release badge shows it at once.
         run: |
           badge="https://img.shields.io/github/v/release/${GITHUB_REPOSITORY}?label=release&color=3fb950&cacheSeconds=600"
           for i in $(seq 1 26); do

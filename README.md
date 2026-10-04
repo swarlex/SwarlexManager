@@ -91,13 +91,6 @@ When a Discord, Spotify or Steam update breaks a mod later, open **[6] Repair** 
 - **App Updater** upgrades every app with a pending `winget` update.
 - Self-update, action history, a detailed log and *System Info* for bug reports.
 
-## Updating
-
-Swarlex checks for a new version each time it starts - silently, and not at all when you are offline.
-With **Auto-Update** on (the default) a new version is downloaded, verified against its SHA-256 and
-installed right away, and Swarlex reopens. Turn it off in *Settings > [9]* to be asked first instead.
-The previous version is kept as `%APPDATA%\Swarlex Manager\Swarlex-Manager.previous.bat`.
-
 ## FAQ
 
 <details>
@@ -131,6 +124,16 @@ Get-FileHash .\Swarlex-Manager.bat -Algorithm SHA256
 
 No. *Settings > [3] Start As Admin* is only for setups where Discord, Spotify or Steam lives in a folder
 your Windows account cannot write to.
+</details>
+
+<details>
+<summary><b>How does Swarlex update itself?</b></summary>
+<br>
+
+Swarlex checks for a new version each time it starts - silently, and not at all when you are offline.
+With **Auto-Update** on (the default) a new version is downloaded, verified against its SHA-256 and
+installed right away, and Swarlex reopens. Turn it off in *Settings > [9]* to be asked first instead.
+The previous version is kept as `%APPDATA%\Swarlex Manager\Swarlex-Manager.previous.bat`.
 </details>
 
 <details>
