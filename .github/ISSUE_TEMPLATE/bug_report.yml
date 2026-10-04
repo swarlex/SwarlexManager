@@ -6,6 +6,21 @@ body:
     attributes:
       value: |
         Thanks for taking the time to report this. The two pastes below answer most questions up front.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it happen?
+      options:
+        - Discord / Vencord
+        - Spotify / Spicetify
+        - Steam / Millennium
+        - App Updater
+        - Backup / Restore / Undo
+        - Repair
+        - Settings / Swarlex update
+        - Somewhere else
+    validations:
+      required: true
   - type: textarea
     id: what
     attributes:

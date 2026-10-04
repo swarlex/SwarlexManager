@@ -6,7 +6,6 @@
 
 **Install, update, repair and back up Vencord, Spicetify and Millennium from one double-click script.**
 
-
 [![Latest release](https://img.shields.io/github/v/release/swarlex/SwarlexManager?label=release&color=3fb950&cacheSeconds=600)](https://github.com/swarlex/SwarlexManager/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/swarlex/SwarlexManager/total?color=61d6d6&cacheSeconds=600)](https://github.com/swarlex/SwarlexManager/releases)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
@@ -15,6 +14,8 @@
 ### [⬇ Download Swarlex-Manager.bat](https://github.com/swarlex/SwarlexManager/releases/latest/download/Swarlex-Manager.bat)
 
 <sub>Single file · no installer · no admin rights · updates itself</sub>
+
+[Quick start](#quick-start) · [Features](#features) · [Screenshots](#screenshots) · [FAQ](#faq) · [Changelog](CHANGELOG.md)
 
 <br>
 
@@ -25,6 +26,19 @@
 Swarlex Manager is a menu-driven console tool that installs, updates, repairs and backs up the mods you run on
 Discord, Spotify and Steam. It is a single `.bat` file with no installer: everything it needs is downloaded
 from the official sources the first time it is needed, and it keeps itself up to date from this repository.
+
+<p align="center"><img src="docs/features.svg" alt="Patch every Discord, Plugin Hub, Update Guard, Verified Millennium, One-click Repair, Snapshots and Undo" width="100%"></p>
+
+## Quick start
+
+1. **[Download `Swarlex-Manager.bat`](https://github.com/swarlex/SwarlexManager/releases/latest/download/Swarlex-Manager.bat)**
+   and put it in a folder of its own, for example `Documents\Swarlex`.
+2. **Double-click it.** If SmartScreen warns about a downloaded script, choose *More info > Run anyway*.
+3. **Pick your app.** `1` Discord, `2` Spotify or `3` Steam, then `1` again to install its mod (Vencord,
+   Spicetify or Millennium). Swarlex fetches whatever it needs - Git, Node.js and the mod itself - on the way.
+
+From then on Swarlex keeps itself up to date. When a Discord, Spotify or Steam update breaks a mod, open
+**[6] Repair** and press Enter.
 
 ## Screenshots
 
@@ -170,6 +184,60 @@ Everything below can be undone from inside Swarlex:
 The [release workflow](.github/workflows/release.yml) checks that the tag matches `SWX_VERSION`, publishes
 `Swarlex-Manager.bat` with its `.sha256`, and uses the changelog section as the release notes. Every
 installed copy then installs the update the next time it is opened.
+
+## FAQ
+
+<details>
+<summary><b>Is it safe? What does it download?</b></summary>
+
+Swarlex is a plain-text script, so you can read every line of it before you run it. It downloads only from
+the official sources: Vencord and Spicetify from their GitHub repositories, Millennium from its GitHub
+releases (checked against the published SHA-256 and the publisher's code signature), Git and Node.js through
+`winget`, pnpm through `npm`, userplugins only from links you paste, and its own updates from this repository
+(checked against the release's SHA-256). It never asks for
+or reads your Discord, Spotify or Steam login.
+</details>
+
+<details>
+<summary><b>Windows SmartScreen or my antivirus warns about it.</b></summary>
+
+SmartScreen warns about most scripts downloaded from the internet that few people have run yet. Choose
+*More info > Run anyway*. Some antivirus programs are suspicious of any `.bat` file that patches other apps;
+compare your file's SHA-256 with the release (see [Verifying a download](#verifying-a-download)) if in doubt.
+</details>
+
+<details>
+<summary><b>Do I need administrator rights?</b></summary>
+
+No. Everything works with standard rights. *Settings > [3] Start As Admin* is there for setups where Discord,
+Spotify or Steam lives in a folder your Windows account cannot write to.
+</details>
+
+<details>
+<summary><b>Discord, Spotify or Steam updated and my mods are gone.</b></summary>
+
+That is what client updates do. Open **[6] Repair**: it finds the client that lost its mod and puts it back
+in one go. For Spotify you can also turn on **Spotify > [3] Update Guard** so it stops updating itself.
+</details>
+
+<details>
+<summary><b>How do I remove everything again?</b></summary>
+
+*Discord > [6] Uninject*, *Spotify > [5] Restore Spotify* and *Steam > [6] Uninstall* put each client back to
+stock. Then delete `Swarlex-Manager.bat` and the `%APPDATA%\Swarlex Manager` folder.
+</details>
+
+<details>
+<summary><b>Something does not work.</b></summary>
+
+[Open an issue](https://github.com/swarlex/SwarlexManager/issues/new/choose) and paste
+*Settings > [7] System Info* - it lists every version Swarlex sees and answers most questions up front.
+</details>
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome - see [CONTRIBUTING.md](CONTRIBUTING.md) for how the script
+is put together and what keeps it working everywhere. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Disclaimer
 
