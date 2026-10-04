@@ -38,6 +38,21 @@ Test your change by running the script: open every menu you touched, and try the
 
 Do not change `SWX_VERSION` - the version is bumped when a release is made.
 
+## Making a release (maintainers)
+
+1. Change `set "SWX_VERSION=x.y.z"` near the top of `Swarlex-Manager.bat`.
+2. Turn `## [Unreleased]` in [CHANGELOG.md](CHANGELOG.md) into `## [x.y.z] - <date>`.
+3. Commit, then tag and push:
+
+   ```bash
+   git tag vx.y.z
+   git push origin main vx.y.z
+   ```
+
+The [release workflow](.github/workflows/release.yml) checks that the tag matches `SWX_VERSION`, publishes
+`Swarlex-Manager.bat` with its `.sha256` and uses the changelog section as the release notes. Every installed
+copy then installs the update the next time it is opened.
+
 ## License
 
 By contributing you agree that your contribution is released under the
