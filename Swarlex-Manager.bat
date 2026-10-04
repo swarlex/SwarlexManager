@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.3"
+set "SWX_VERSION=1.1.4"
 set "SWX_REPO=swarlex/swarlex-manager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -2085,20 +2085,14 @@ call :CENTER_PAUSE
 goto MENU_SETTINGS
 
 :AUTO_SELF_UPDATE
-:: Returns 0 only when the new version is downloaded, verified and about to replace this window
-set "SWX_UPD="
-if exist "!SWX_UPDATE_FILE!" for /f "usebackq tokens=1,* delims==" %%A in ("!SWX_UPDATE_FILE!") do if /i "%%A"=="swarlex" set "SWX_UPD=%%B"
-if not defined SWX_UPD exit /b 1
-if "!SWX_UPD!"=="!SWX_VERSION!" exit /b 1
-cls
-echo.
-echo.
-echo !INDENT!  !C_CYAN![*] Updating Swarlex v!SWX_VERSION! to v!SWX_UPD!...!C_RESET!
-echo.
-set "SWX_SU_MODE=install"
+:: Returns 0 only when the new version is downloaded, verified and about to replace this window.
+:: Asks GitHub at every start (a few hundred ms, silent when there is nothing new or no internet),
+:: so a new version is installed the first time Swarlex is opened after its release.
+set "SWX_SU_MODE=auto"
 call :RUN_PS SELFUPDATE
 set "SU_RC=!errorlevel!"
 if "!SU_RC!"=="10" exit /b 1
+if "!SU_RC!"=="11" exit /b 1
 if not "!SU_RC!"=="0" (
     echo !INDENT!  !C_GRAY!Staying on v!SWX_VERSION! - retry from Settings, [8].!C_RESET!
     ping -n 5 127.0.0.1 >nul 2>&1
@@ -2475,7 +2469,7 @@ function Clear-CacheFolders([string[]]$folders) {
 # "success / info / warn / error" tags coloured. The output goes to files rather than a pipe: tools such as
 # spicetify start Spotify, which would inherit a pipe and keep it open, so reading it could never finish.
 # True when version $a is newer than version $b ("1.2.10" vs "1.2.9"); anything unparsable is "not newer"
-function Get-LatestRelease([string]$repo, [switch]$Full) {
+function Get-LatestRelease([string]$repo, [switch]$Full, [int]$TimeoutSec = 15) {
     # The GitHub API allows only 60 calls an hour per internet address, so it is used only when the
     # release notes and file list are needed. The version alone comes from the /releases/latest
     # redirect of the normal website, and when the API is out of calls the file list comes from the
@@ -2483,7 +2477,7 @@ function Get-LatestRelease([string]$repo, [switch]$Full) {
     $ua = 'Swarlex-Manager'
     function Get-WebTag {
         $req = [Net.HttpWebRequest]::Create('https://github.com/' + $repo + '/releases/latest')
-        $req.Method = 'HEAD'; $req.AllowAutoRedirect = $false; $req.UserAgent = $ua; $req.Timeout = 15000
+        $req.Method = 'HEAD'; $req.AllowAutoRedirect = $false; $req.UserAgent = $ua; $req.Timeout = $TimeoutSec * 1000
         $res = $req.GetResponse()
         try { $loc = [string]$res.Headers['Location'] } finally { $res.Close() }
         if ($loc -notmatch '/releases/tag/([^/?#]+)$') { throw 'GitHub did not report a latest release' }
@@ -2610,6 +2604,8 @@ function Write-History([string]$action, [string]$result) {
 # SWX_SU_MODE:
 #   check    compare this file's version with the latest GitHub release and show what changed.
 #            Exit 0 = a newer version exists, 10 = this is the latest, 1 = could not check.
+#   auto     used at start with Auto-Update on: silent unless a newer version exists, which is then
+#            installed like "install". Exit 0 = installed, 10 = nothing to do, 11 = GitHub unreachable.
 #   install  download that release's Swarlex-Manager.bat, check its SHA-256 against the release's
 #            .sha256 file and that it really is Swarlex at that version, then write a helper that swaps
 #            the file once this window is closed (the old copy is kept as Swarlex-Manager.previous.bat).
@@ -2620,20 +2616,35 @@ $work = Join-Path $env:TEMP 'swarlex-update'
 $helper = Join-Path $env:TEMP 'swarlex-selfupdate-run.cmd'
 try {
     if ($env:SWX_TEST_RELEASE) { $rel = Get-Content -LiteralPath $env:SWX_TEST_RELEASE -Raw | ConvertFrom-Json }
+    elseif ($env:SWX_SU_MODE -eq 'auto') {
+        # the version alone is a quick, unlimited lookup; the file list is only fetched when it is needed
+        $rel = Get-LatestRelease $repo -TimeoutSec 6
+        if (Test-NewerVersion ([string]$rel.tag_name) $cur) { $rel = Get-LatestRelease $repo -Full -TimeoutSec 20 }
+    }
     else { $rel = Get-LatestRelease $repo -Full }
 } catch {
+    if ($env:SWX_SU_MODE -eq 'auto') { exit 11 }
     Say ('[x] Could not reach GitHub: ' + $_.Exception.Message) 'Red'
     exit 1
 }
 $latest = ([string]$rel.tag_name).TrimStart('v')
 if (-not (Test-NewerVersion $latest $cur)) {
+    if ($env:SWX_SU_MODE -eq 'auto') { exit 10 }
     Say ('[+] Swarlex v' + $cur + ' is the latest version.') 'Green'
     exit 10
+}
+if ($env:SWX_SU_MODE -eq 'auto') {
+    Clear-Host
+    Write-Host ''; Write-Host ''
+    Say ('[*] Updating Swarlex v' + $cur + ' to v' + $latest + '...') 'Cyan'
+    Write-Host ''
 }
 
 if ($env:SWX_SU_MODE -eq 'check') {
     Say ('[*] Swarlex v' + $latest + ' is available - you have v' + $cur + '.') 'Cyan'
-    $notes = @(([string]$rel.body) -split "`r?`n" | ForEach-Object { ($_ -replace '^[\s#>*-]+', '').Trim() } | Where-Object { $_ } | Select-Object -First 10)
+    $notes = @(([string]$rel.body) -split "`r?`n" |
+        Where-Object { $_ -notmatch 'SHA-256' } |
+        ForEach-Object { ($_ -replace '^[\s#>*-]+', '' -replace '\*\*|`', '').Trim() } | Where-Object { $_ } | Select-Object -First 10)
     if ($notes.Count) {
         Write-Host ''
         Write-Host ($pad + "What's new:") -ForegroundColor White
@@ -2684,7 +2695,7 @@ try {
     )
     [IO.File]::WriteAllText($helper, ($lines -join "`r`n") + "`r`n", (New-Object Text.UTF8Encoding $false))
     Say ('[+] v' + $latest + ' downloaded and verified - Swarlex restarts with it in a moment.') 'Green'
-    Say ('    The current version is kept as ' + $previous) 'DarkGray'
+    Say '    The old version is kept in %APPDATA%\Swarlex Manager.' 'DarkGray'
     Write-History 'Swarlex update' ('v' + $cur + ' -> v' + $latest)
     # The new version starts with a clean slate instead of announcing the update it just installed
     if ($env:SWX_UPDATE_FILE) { Remove-Item -LiteralPath $env:SWX_UPDATE_FILE -Force -ErrorAction SilentlyContinue }

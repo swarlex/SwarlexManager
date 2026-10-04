@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="658" height="524" viewBox="0 0 658 524" role="img" aria-label="Swarlex Manager [Standard]">
+  <defs><filter id="s" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#000" flood-opacity=".35"/></filter></defs>
+  <style>.t{font-family:&quot;Cascadia Mono&quot;,&quot;Cascadia Code&quot;,Consolas,&quot;SF Mono&quot;,Menlo,&quot;DejaVu Sans Mono&quot;,monospace;font-size:14px;white-space:pre}.u{font-family:&quot;Segoe UI Variable Display&quot;,&quot;Segoe UI&quot;,system-ui,-apple-system,&quot;Helvetica Neue&quot;,Arial,sans-serif;font-size:12px}</style>
+  <g transform="translate(22 22)">
+    <rect width="614" height="480" rx="9" fill="#0C0C0C" stroke="#2E2E2E" filter="url(#s)"/>
+    <path d="M9 0h596a9 9 0 0 1 9 9v31H0V9a9 9 0 0 1 9-9z" fill="#202020"/>
+    <path d="M10 40 V14a6 6 0 0 1 6-6h232a6 6 0 0 1 6 6v26z" fill="#0C0C0C"/>
+    <rect x="24" y="18" width="14" height="12" rx="2" fill="none" stroke="#9A9A9A"/><path d="M27 22l2.5 2-2.5 2M31 27h4" stroke="#9A9A9A" fill="none"/>
+    <text class="u" x="48" y="29" fill="#E6E6E6">Swarlex Manager [Standard]</text>
+    <path d="M232 20l8 8M240 20l-8 8" stroke="#9A9A9A" stroke-width="1.2"/>
+    <path d="M272 18v12M266 24h12" stroke="#9A9A9A" stroke-width="1.2"/><path d="M296 22l4 4 4-4" stroke="#9A9A9A" stroke-width="1.2" fill="none"/>
+    <path d="M504 22h10" stroke="#CFCFCF"/><rect x="548" y="17" width="10" height="10" fill="none" stroke="#CFCFCF"/><path d="M592 17l10 10M602 17l-10 10" stroke="#CFCFCF"/>
+    <rect x="32.225" y="61" width="532" height="40" rx="7" fill="none" stroke="#61D6D6" stroke-width="1.6"/>
+    <text class="t" x="298.4" y="90" text-anchor="middle" fill="#F2F2F2" font-weight="700">DISCORD &amp; VENCORD CONTROLS</text>
+    <text class="t" x="28" y="150" xml:space="preserve"><tspan fill="#CCCCCC">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Discord   : </tspan><tspan fill="#16C60C">Running          </tspan><tspan fill="#CCCCCC"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Vencord   : </tspan><tspan fill="#16C60C">Patched</tspan></text>
+    <path d="M28 185h541" stroke="#767676" stroke-width="1.2"/>
+    <text class="t" x="28" y="230" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#16C60C">1</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#16C60C">Patch Discord       </tspan><tspan fill="#CCCCCC">Build &amp; Inject Vencord Bundle</tspan></text>
+    <text class="t" x="28" y="250" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#B4009E">2</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#B4009E">Update Vencord      </tspan><tspan fill="#CCCCCC">Git Pull Latest Release &amp; Re-inject</tspan></text>
+    <text class="t" x="28" y="290" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#F9F1A5">3</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#F9F1A5">Plugin Hub          </tspan><tspan fill="#CCCCCC">Download &amp; Manage Custom Plugins</tspan></text>
+    <text class="t" x="28" y="310" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#F9F1A5">4</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#F9F1A5">QuickCSS            </tspan><tspan fill="#CCCCCC">Edit Custom Discord Stylesheet</tspan></text>
+    <text class="t" x="28" y="350" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#61D6D6">5</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#61D6D6">Clean Cache         </tspan><tspan fill="#CCCCCC">Clear Discord Cache - Login Is Kept</tspan></text>
+    <text class="t" x="28" y="370" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#E74856">6</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#E74856">Uninject            </tspan><tspan fill="#CCCCCC">Restore Discord to Default State</tspan></text>
+    <text class="t" x="28" y="410" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#767676">0</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#767676">Back                </tspan><tspan fill="#CCCCCC">Return to Main Menu</tspan></text>
+    <path d="M28 445h541" stroke="#767676" stroke-width="1.2"/>
+  </g>
+</svg>
