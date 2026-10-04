@@ -220,6 +220,8 @@ is put together. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Credits & license
 
+<a href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://www.gnu.org/graphics/gplv3-with-text-136x68.png" alt="GPLv3 - Free Software" align="right"></a>
+
 Made by [swarlex](https://github.com/swarlex), built together with [Claude](https://claude.ai) by Anthropic in
 [Claude Code](https://claude.com/claude-code). Swarlex stands on the shoulders of
 [Vencord](https://github.com/Vendicated/Vencord), [Spicetify](https://github.com/spicetify/cli),
