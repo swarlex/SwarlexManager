@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="332" viewBox="0 0 1280 332" role="img" aria-label="Swarlex Manager features">
+  <style>.s{font-family:&quot;Segoe UI Variable Display&quot;,&quot;Segoe UI&quot;,system-ui,-apple-system,&quot;Helvetica Neue&quot;,Arial,sans-serif}</style>
+  <defs><linearGradient id="card" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141B2B"/><stop offset="1" stop-color="#0E1320"/></linearGradient></defs>
+  <g transform="translate(0 0)">
+    <rect x=".5" y=".5" width="412" height="155" rx="16" fill="url(#card)" stroke="#26304A"/>
+    <rect x="24" y="0" width="365" height="3" rx="1.5" fill="#7B86FF" fill-opacity=".8"/>
+    <rect x="28" y="30" width="48" height="48" rx="12" fill="#7B86FF" fill-opacity=".14" stroke="#7B86FF" stroke-opacity=".35"/>
+    <g transform="translate(40 42)"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="none" stroke="#7B86FF" stroke-width="2" stroke-linejoin="round"/></g>
+    <text class="s" x="94" y="62" font-size="22" font-weight="600" fill="#F1F4FA">Patch every Discord</text>
+    <text class="s" x="28" y="110" font-size="16" fill="#A3ADC2">Builds Vencord from source and injects it</text>
+    <text class="s" x="28" y="133" font-size="16" fill="#A3ADC2">into Stable, PTB, Canary and Development.</text>
+  </g>
+  <g transform="translate(433 0)">
+    <rect x=".5" y=".5" width="412" height="155" rx="16" fill="url(#card)" stroke="#26304A"/>
+    <rect x="24" y="0" width="365" height="3" rx="1.5" fill="#7B86FF" fill-opacity=".8"/>
+    <rect x="28" y="30" width="48" height="48" rx="12" fill="#7B86FF" fill-opacity=".14" stroke="#7B86FF" stroke-opacity=".35"/>
+    <g transform="translate(40 42)"><rect x="3" y="3" width="7.5" height="7.5" rx="2" fill="none" stroke="#7B86FF" stroke-width="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2" fill="none" stroke="#7B86FF" stroke-width="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2" fill="none" stroke="#7B86FF" stroke-width="2"/><path d="M17.25 14v6.5M14 17.25h6.5" stroke="#7B86FF" stroke-width="2" stroke-linecap="round"/></g>
+    <text class="s" x="94" y="62" font-size="22" font-weight="600" fill="#F1F4FA">Plugin Hub</text>
+    <text class="s" x="28" y="110" font-size="16" fill="#A3ADC2">Install userplugins from a GitHub link.</text>
+    <text class="s" x="28" y="133" font-size="16" fill="#A3ADC2">A plugin that breaks the build is switched off.</text>
+  </g>
+  <g transform="translate(866 0)">
+    <rect x=".5" y=".5" width="412" height="155" rx="16" fill="url(#card)" stroke="#26304A"/>
+    <rect x="24" y="0" width="365" height="3" rx="1.5" fill="#1ED760" fill-opacity=".8"/>
+    <rect x="28" y="30" width="48" height="48" rx="12" fill="#1ED760" fill-opacity=".14" stroke="#1ED760" stroke-opacity=".35"/>
+    <g transform="translate(40 42)"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z" fill="none" stroke="#1ED760" stroke-width="2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="#1ED760" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+    <text class="s" x="94" y="62" font-size="22" font-weight="600" fill="#F1F4FA">Update Guard</text>
+    <text class="s" x="28" y="110" font-size="16" fill="#A3ADC2">Stops Spotify from silently updating</text>
+    <text class="s" x="28" y="133" font-size="16" fill="#A3ADC2">itself and wiping your Spicetify setup.</text>
+  </g>
+  <g transform="translate(0 176)">
+    <rect x=".5" y=".5" width="412" height="155" rx="16" fill="url(#card)" stroke="#26304A"/>
+    <rect x="24" y="0" width="365" height="3" rx="1.5" fill="#66C0F4" fill-opacity=".8"/>
+    <rect x="28" y="30" width="48" height="48" rx="12" fill="#66C0F4" fill-opacity=".14" stroke="#66C0F4" stroke-opacity=".35"/>
+    <g transform="translate(40 42)"><circle cx="12" cy="12" r="9" fill="none" stroke="#66C0F4" stroke-width="2"/><path d="m8 12.2 2.8 2.8L16.2 9.5" fill="none" stroke="#66C0F4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+    <text class="s" x="94" y="62" font-size="22" font-weight="600" fill="#F1F4FA">Verified Millennium</text>
+    <text class="s" x="28" y="110" font-size="16" fill="#A3ADC2">SHA-256 and code signature are checked</text>
+    <text class="s" x="28" y="133" font-size="16" fill="#A3ADC2">before a single file is copied into Steam.</text>
+  </g>
+  <g transform="translate(433 176)">
+    <rect x=".5" y=".5" width="412" height="155" rx="16" fill="url(#card)" stroke="#26304A"/>
+    <rect x="24" y="0" width="365" height="3" rx="1.5" fill="#FF6B78" fill-opacity=".8"/>
+    <rect x="28" y="30" width="48" height="48" rx="12" fill="#FF6B78" fill-opacity=".14" stroke="#FF6B78" stroke-opacity=".35"/>
+    <g transform="translate(40 42)"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.6L3.5 17.1a1.8 1.8 0 0 0 2.5 2.5l5.2-5.2a4.5 4.5 0 0 0 5.6-6l-2.7 2.7-2.4-.6-.6-2.4z" fill="none" stroke="#FF6B78" stroke-width="2" stroke-linejoin="round"/></g>
+    <text class="s" x="94" y="62" font-size="22" font-weight="600" fill="#F1F4FA">One-click Repair</text>
+    <text class="s" x="28" y="110" font-size="16" fill="#A3ADC2">Finds what a client update broke</text>
+    <text class="s" x="28" y="133" font-size="16" fill="#A3ADC2">and fixes all of it in one go.</text>
+  </g>
+  <g transform="translate(866 176)">
+    <rect x=".5" y=".5" width="412" height="155" rx="16" fill="url(#card)" stroke="#26304A"/>
+    <rect x="24" y="0" width="365" height="3" rx="1.5" fill="#D45CFF" fill-opacity=".8"/>
+    <rect x="28" y="30" width="48" height="48" rx="12" fill="#D45CFF" fill-opacity=".14" stroke="#D45CFF" stroke-opacity=".35"/>
+    <g transform="translate(40 42)"><path d="M9 7 4 12l5 5" fill="none" stroke="#D45CFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12h10a6 6 0 0 1 0 12h-2" fill="none" stroke="#D45CFF" stroke-width="2" stroke-linecap="round" transform="translate(0 -4)"/></g>
+    <text class="s" x="94" y="62" font-size="22" font-weight="600" fill="#F1F4FA">Snapshots &amp; Undo</text>
+    <text class="s" x="28" y="110" font-size="16" fill="#A3ADC2">A snapshot is taken before every update.</text>
+    <text class="s" x="28" y="133" font-size="16" fill="#A3ADC2">Roll back with one key if something breaks.</text>
+  </g>
+</svg>
