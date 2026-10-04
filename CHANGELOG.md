@@ -2,6 +2,15 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.7] - 2026-10-04
+
+- Restore now brings your Spotify setup back for real: Spicetify is applied right after the restore, so the
+  restored themes and extensions show up. Spotify's location and Spicetify's backup info keep this PC's
+  values instead of the ones from the PC the backup was made on, which stopped Spicetify from applying.
+- When the backup has Millennium add-ons but Millennium is not installed, Restore offers to install it.
+- Userplugins in a backup restored before Vencord is set up are no longer skipped: they are kept and put
+  in place by *Discord > Patch Discord*.
+
 ## [1.1.6] - 2026-10-04
 
 - Fixed "pnpm is not installed and could not be installed automatically" on PCs without pnpm. Node.js

@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.6"
+set "SWX_VERSION=1.1.7"
 set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -701,10 +701,24 @@ if not exist "!VENCORD_DIR!\package.json" (
     )
     call :DLOG INFO "Cloned Vencord into !VENCORD_DIR!"
     if not exist "!VENCORD_DIR!\src\userplugins" mkdir "!VENCORD_DIR!\src\userplugins" 2>nul
+    call :PLACE_PENDING_PLUGINS
     call :BUILD_VENCORD || exit /b 1
     echo !INDENT!!C_GREEN![+] Vencord repository setup complete.!C_RESET!
     timeout /t 2 >nul 2>&1
 )
+call :PLACE_PENDING_PLUGINS
+exit /b 0
+
+:PLACE_PENDING_PLUGINS
+:: Userplugins from a backup restored before Vencord was set up
+set "PENDING_PLUGINS=!SWX_DATA!\pending-userplugins"
+if not exist "!PENDING_PLUGINS!\" exit /b 0
+if not exist "!VENCORD_DIR!\src\" exit /b 0
+robocopy "!PENDING_PLUGINS!" "!VENCORD_DIR!\src\userplugins" /E /R:1 /W:1 /NFL /NDL /NJH /NJS /NP >nul
+if errorlevel 8 exit /b 0
+rd /s /q "!PENDING_PLUGINS!" 2>nul
+echo !INDENT!!C_GREEN![+] The userplugins from your backup are in place.!C_RESET!
+call :DLOG INFO "Restore: pending userplugins placed into !VENCORD_DIR!\src\userplugins"
 exit /b 0
 
 :WINGET_INSTALL
@@ -1830,12 +1844,62 @@ call :KILL_SPOTIFY
 :: Steam only has to close when Millennium is in use - it rewrites its config on exit
 if exist "!STEAM_DIR!\millennium\" call :KILL_STEAM
 set "SWX_ZIP=!LATEST_ZIP!"
+set "SWX_RESTORED_FILE=%TEMP%\swarlex-restored.txt"
+del /f /q "!SWX_RESTORED_FILE!" >nul 2>&1
 call :RUN_PS RESTORE
-if not errorlevel 1 set "RC=0"
+if not errorlevel 1 (
+    set "RC=0"
+    rem Restored files alone change nothing in Spotify and Steam - make the setup active again
+    findstr /x /i "spicetify" "!SWX_RESTORED_FILE!" >nul 2>&1 && call :RESTORE_APPLY_SPICETIFY
+    findstr /x /i "millennium" "!SWX_RESTORED_FILE!" >nul 2>&1 && call :RESTORE_CHECK_MILLENNIUM
+)
+del /f /q "!SWX_RESTORED_FILE!" >nul 2>&1
+set "SWX_RESTORED_FILE="
 call :RESTART_DISCORD_PROC
 call :RESTART_SPOTIFY_PROC
 call :RESTART_STEAM_PROC
 goto FINISH_BACKUP
+
+:RESTORE_APPLY_SPICETIFY
+echo.
+call :ENSURE_SPOTIFY_TOOLS
+if errorlevel 1 exit /b 1
+call :SPINNER_STEP "Applying the restored Spicetify setup..."
+call :SPICETIFY apply !SPICETIFY_FLAGS!
+if errorlevel 1 call :SPICETIFY backup apply !SPICETIFY_FLAGS!
+if errorlevel 1 (
+    echo !INDENT!  !C_YELLOW![^^!] Not applied - use Spotify, [1] Apply Spicetify.!C_RESET!
+    call :DLOG WARN "Restore: Spicetify could not be applied"
+    exit /b 1
+)
+echo !INDENT!  !C_GREEN![+] Spicetify applied - your themes and extensions are back.!C_RESET!
+:: spicetify apply starts Spotify itself
+set "SPOTIFY_KILLED="
+call :START_SPOTIFY_PROC
+exit /b 0
+
+:RESTORE_CHECK_MILLENNIUM
+if exist "!STEAM_DIR!\wsock32.dll" if exist "!STEAM_DIR!\millennium\lib\millennium.dll" exit /b 0
+if not exist "!STEAM_DIR!\steam.exe" exit /b 0
+echo.
+echo !INDENT!  !C_YELLOW![^^!] Millennium is not installed - the add-ons need it.!C_RESET!
+set "DO_MILL="
+set /p "DO_MILL=!PROMPT_INDENT!Install Millennium now? [Y/N]: "
+if /i "!DO_MILL!"=="yes" set "DO_MILL=y"
+if /i not "!DO_MILL!"=="y" (
+    echo !INDENT!  !C_GRAY!Later: Steam, [1] Install / Update.!C_RESET!
+    exit /b 0
+)
+:: The install closes and reopens Steam itself; remember whether it was open before the restore
+set "MILL_PREV_OPEN=!STEAM_WAS_RUNNING!"
+call :SPINNER_STEP "Checking the latest Millennium release..."
+call :MILL_INSTALL_STEPS
+if defined MILL_PREV_OPEN (
+    set "STEAM_KILLED=1"
+    set "STEAM_WAS_RUNNING=1"
+)
+set "MILL_PREV_OPEN="
+exit /b 0
 
 :ACTION_UNDO_SNAPSHOT
 echo.
@@ -3982,6 +4046,50 @@ exit 0
 ::SWX_PS_END
 
 ::SWX_PS_BEGIN RESTORE
+# config-xpui.ini also holds what only fits this PC: where Spotify is, and which Spotify version
+# Spicetify's own backup of it belongs to. Those keep this PC's values; everything else comes from
+# the backup. Taken from another PC or an older Spotify they would stop Spicetify from applying.
+function Merge-SpiceIni([string]$path, [string]$before) {
+    if (-not (Test-Path -LiteralPath $path)) { return }
+    $text = [IO.File]::ReadAllText($path)
+    $nl = if ($text.Contains("`r`n")) { "`r`n" } else { "`n" }
+    $mine = @{}
+    $myBackup = $null
+    if ($before) {
+        $sec = ''
+        foreach ($l in ($before -split "`r?`n")) {
+            if ($l -match '^\s*\[(.+?)\]') { $sec = $Matches[1]; if ($sec -eq 'Backup') { $myBackup = @() }; continue }
+            if ($sec -eq 'Setting' -and $l -match '^\s*(spotify_path|prefs_path)\s*=\s*(.*)$') { $mine[$Matches[1]] = $Matches[2].Trim() }
+            if ($sec -eq 'Backup' -and $l.Trim()) { $myBackup += $l }
+        }
+    }
+    $defaults = @{ spotify_path = (Join-Path $env:APPDATA 'Spotify'); prefs_path = (Join-Path $env:APPDATA 'Spotify\prefs') }
+    $out = New-Object Collections.Generic.List[string]
+    $sec = ''
+    foreach ($l in ($text -split "`r?`n")) {
+        if ($l -match '^\s*\[(.+?)\]') {
+            $sec = $Matches[1]
+            $out.Add($l)
+            if ($sec -eq 'Backup' -and $null -ne $myBackup) { foreach ($b in $myBackup) { $out.Add($b) } }
+            continue
+        }
+        if ($sec -eq 'Backup') {
+            if ($null -ne $myBackup) { if (-not $l.Trim()) { $out.Add($l) }; continue }
+            # No Spicetify backup on this PC yet: an empty one makes Spicetify take a fresh one
+            if ($l -match '^(\s*(version|with)\s*=).*$') { $out.Add($Matches[1] + ' '); continue }
+        }
+        if ($sec -eq 'Setting' -and $l -match '^(\s*(spotify_path|prefs_path)\s*=\s*)(.*)$') {
+            $key = $Matches[2]; $lead = $Matches[1]; $val = $Matches[3].Trim()
+            $pick = ''
+            foreach ($c in @($mine[$key], $val, $defaults[$key])) { if ($c -and (Test-Path -LiteralPath $c)) { $pick = $c; break } }
+            $out.Add($lead + $pick)
+            continue
+        }
+        $out.Add($l)
+    }
+    [IO.File]::WriteAllText($path, ($out -join $nl), (New-Object Text.UTF8Encoding $false))
+}
+
 $stage = Join-Path $env:TEMP ('swarlex-restore-' + [guid]::NewGuid().ToString('N'))
 $done = @()
 $failed = $null
@@ -3994,13 +4102,20 @@ try {
     if ($env:SWX_VENCORD_DIR -and (Test-Path -LiteralPath (Join-Path $env:SWX_VENCORD_DIR 'src'))) {
         $targets['userplugins'] = Join-Path $env:SWX_VENCORD_DIR 'src\userplugins'
     } elseif (Test-Path -LiteralPath (Join-Path $stage 'userplugins')) {
-        Say '[!] Skipped userplugins - no Vencord source folder found.' 'Yellow'
+        # Kept until Vencord is set up (Discord > Patch Discord), which then puts them in place
+        $pending = Join-Path $env:SWX_DATA 'pending-userplugins'
+        Copy-Tree (Join-Path $stage 'userplugins') $pending
+        Say '[*] Userplugins are kept until Vencord is set up.' 'Cyan'
+        Say '    Discord > [1] Patch Discord puts them in place.' 'DarkGray'
+        $done += 'userplugins (pending)'
     }
     if ($env:SWX_STEAM_DIR -and (Test-Path -LiteralPath (Join-Path $env:SWX_STEAM_DIR 'steam.exe'))) {
         $targets['millennium'] = Join-Path $env:SWX_STEAM_DIR 'millennium'
     } elseif (Test-Path -LiteralPath (Join-Path $stage 'millennium')) {
         Say '[!] Skipped Millennium add-ons - Steam was not found.' 'Yellow'
     }
+    $spiceIni = Join-Path $targets['spicetify'] 'config-xpui.ini'
+    $iniBefore = if (Test-Path -LiteralPath $spiceIni) { [IO.File]::ReadAllText($spiceIni) } else { '' }
     foreach ($name in @($targets.Keys)) {
         $from = Join-Path $stage $name
         if (Test-Path -LiteralPath $from) {
@@ -4008,6 +4123,7 @@ try {
             $done += $name
         }
     }
+    if ($done -contains 'spicetify') { Merge-SpiceIni $spiceIni $iniBefore }
     # Safety snapshots of a Vencord update carry the commit from before it; the batch side puts it back
     $headFile = Join-Path $stage 'vencord-head.txt'
     if ($env:SWX_ROLLBACK_FILE -and (Test-Path -LiteralPath $headFile)) { Copy-Item -LiteralPath $headFile -Destination $env:SWX_ROLLBACK_FILE -Force }
@@ -4019,6 +4135,8 @@ try {
 $label = if ($env:SWX_RESTORE_LABEL) { $env:SWX_RESTORE_LABEL } else { 'Restore backup' }
 if ($failed) { Say ('[x] Restore failed: ' + $failed) 'Red'; Write-History $label 'failed'; exit 1 }
 if ($done.Count -eq 0) { Say '[x] The backup has no Vencord, Spicetify or Millennium data.' 'Red'; exit 1 }
+# The batch side applies Spicetify and offers Millennium afterwards, so the restored setup is active
+if ($env:SWX_RESTORED_FILE) { [IO.File]::WriteAllLines($env:SWX_RESTORED_FILE, [string[]]$done) }
 Say ('[+] Restored: ' + ($done -join ', ')) 'Green'
 Write-History $label (($done -join ', ') + ' from ' + (Split-Path $env:SWX_ZIP -Leaf))
 if ($done -contains 'userplugins' -and -not $env:SWX_ROLLBACK_FILE) { Say '    Run Patch Discord to build the restored plugins in.' 'DarkGray' }
