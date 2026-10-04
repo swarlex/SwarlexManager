@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-label="Swarlex Manager - one control center for Vencord, Spicetify and Millennium">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B0F1A"/><stop offset="1" stop-color="#0E1424"/></linearGradient>
+    <radialGradient id="g1" cx="0.12" cy="0.1" r="0.55"><stop offset="0" stop-color="#5865F2" stop-opacity=".45"/><stop offset="1" stop-color="#5865F2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g2" cx="0.5" cy="1.05" r="0.5"><stop offset="0" stop-color="#1DB954" stop-opacity=".30"/><stop offset="1" stop-color="#1DB954" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g3" cx="0.95" cy="0.2" r="0.5"><stop offset="0" stop-color="#66C0F4" stop-opacity=".32"/><stop offset="1" stop-color="#66C0F4" stop-opacity="0"/></radialGradient>
+    <linearGradient id="logo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#61D6D6"/><stop offset=".5" stop-color="#5865F2"/><stop offset="1" stop-color="#B4009E"/></linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#B9C6FF"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#FFFFFF" stroke-opacity=".045"/></pattern>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000" flood-opacity=".5"/></filter>
+    <clipPath id="clip"><rect width="1280" height="420" rx="18"/></clipPath>
+  </defs>
+  <style>.s{font-family:&quot;Segoe UI Variable Display&quot;,&quot;Segoe UI&quot;,system-ui,-apple-system,&quot;Helvetica Neue&quot;,Arial,sans-serif}.m{font-family:&quot;Cascadia Mono&quot;,&quot;Cascadia Code&quot;,Consolas,&quot;SF Mono&quot;,Menlo,&quot;DejaVu Sans Mono&quot;,monospace;white-space:pre}</style>
+  <g clip-path="url(#clip)">
+    <rect width="1280" height="420" fill="url(#bg)"/><rect width="1280" height="420" fill="url(#grid)"/>
+    <rect width="1280" height="420" fill="url(#g1)"/><rect width="1280" height="420" fill="url(#g2)"/><rect width="1280" height="420" fill="url(#g3)"/>
+    <rect x="72" y="76" width="84" height="84" rx="22" fill="url(#logo)"/>
+    <rect x="75" y="79" width="78" height="78" rx="19" fill="#0B0F1A" fill-opacity=".82"/>
+    <path d="M96 104l16 14-16 14" fill="none" stroke="#61D6D6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M118 134h18" stroke="#F2F2F2" stroke-width="7" stroke-linecap="round"/>
+    <text class="s" x="72" y="236" font-size="64" font-weight="700" fill="url(#title)" letter-spacing="-1">Swarlex Manager</text>
+    <text class="s" x="74" y="280" font-size="22" fill="#A7B0C3">One control center for your Windows client mods.</text>
+    <rect x="72" y="316" width="196" height="40" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#5865F2" stroke-opacity=".55"/>
+    <circle cx="94" cy="336" r="6" fill="#5865F2"/>
+    <text class="s" x="110" y="342" font-size="16" fill="#E8ECF5"><tspan font-weight="600">Discord</tspan><tspan fill="#8C96AB"> · Vencord</tspan></text>
+    <rect x="280" y="316" width="204" height="40" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#1DB954" stroke-opacity=".55"/>
+    <circle cx="302" cy="336" r="6" fill="#1DB954"/>
+    <text class="s" x="318" y="342" font-size="16" fill="#E8ECF5"><tspan font-weight="600">Spotify</tspan><tspan fill="#8C96AB"> · Spicetify</tspan></text>
+    <rect x="496" y="316" width="214" height="40" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#66C0F4" stroke-opacity=".55"/>
+    <circle cx="518" cy="336" r="6" fill="#66C0F4"/>
+    <text class="s" x="534" y="342" font-size="16" fill="#E8ECF5"><tspan font-weight="600">Steam</tspan><tspan fill="#8C96AB"> · Millennium</tspan></text>
+    <g filter="url(#sh)"><rect x="760" y="70" width="448" height="282" rx="12" fill="#0C0C0C" stroke="#2A3142"/></g>
+    <path d="M772 70 h424 a12 12 0 0 1 12 12 v22 h-448 v-22 a12 12 0 0 1 12 -12z" fill="#1B1F2A"/>
+    <text class="s" x="780" y="92" font-size="12" fill="#C9CED9">Swarlex Manager [Standard]</text>
+    <path d="M1128 87h9M1156 83h8v8h-8zM1184 83l8 8M1192 83l-8 8" stroke="#9AA3B5" fill="none"/>
+    <rect x="780" y="131" width="336" height="40" rx="7" fill="none" stroke="#61D6D6" stroke-width="1.6"/>
+    <text class="m" x="784" y="157" font-size="14" xml:space="preserve"><tspan fill="#F2F2F2">             S W A R L E X</tspan></text>
+    <text class="m" x="784" y="220" font-size="14" xml:space="preserve"><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Vencord    : </tspan><tspan fill="#16C60C">Patched</tspan></text>
+    <text class="m" x="784" y="241" font-size="14" xml:space="preserve"><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Spicetify  : </tspan><tspan fill="#16C60C">Applied</tspan></text>
+    <text class="m" x="784" y="262" font-size="14" xml:space="preserve"><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Millennium : </tspan><tspan fill="#16C60C">Active</tspan></text>
+    <text class="m" x="784" y="283" font-size="14" xml:space="preserve"><tspan fill="#F9F1A5">●</tspan><tspan fill="#CCCCCC"> App Updates: </tspan><tspan fill="#F9F1A5">3 waiting</tspan></text>
+    <text class="m" x="784" y="325" font-size="14" xml:space="preserve"><tspan fill="#CCCCCC">[</tspan><tspan fill="#E74856">6</tspan><tspan fill="#CCCCCC">] </tspan><tspan fill="#E74856">Repair</tspan><tspan fill="#CCCCCC">   [</tspan><tspan fill="#16C60C">5</tspan><tspan fill="#CCCCCC">] </tspan><tspan fill="#B4009E">Backup</tspan><tspan fill="#CCCCCC">   [</tspan><tspan fill="#F9F1A5">7</tspan><tspan fill="#CCCCCC">] </tspan><tspan fill="#F9F1A5">Settings</tspan></text>
+  </g>
+  <rect x=".5" y=".5" width="1279" height="419" rx="18" fill="none" stroke="#FFFFFF" stroke-opacity=".08"/>
+</svg>

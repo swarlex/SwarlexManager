@@ -1,26 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="637" height="593" viewBox="0 0 637 593" role="img" aria-label="Swarlex Manager [Standard]">
-  <style>text{font-family:"Cascadia Mono","Cascadia Code",Consolas,"DejaVu Sans Mono",Menlo,monospace;font-size:14px;white-space:pre}</style>
-  <rect width="637" height="593" rx="10" fill="#0C0C0C"/>
-  <rect width="637" height="34" rx="10" fill="#1F1F1F"/><rect y="24" width="637" height="10" fill="#1F1F1F"/>
-  <circle cx="20" cy="17" r="6" fill="#FF5F57"/><circle cx="40" cy="17" r="6" fill="#FEBC2E"/><circle cx="60" cy="17" r="6" fill="#28C840"/>
-  <text x="318" y="22" text-anchor="middle" fill="#BBBBBB" style="font-size:12px">Swarlex Manager [Standard]</text>
-  <text x="26" y="58" xml:space="preserve"><tspan fill="#61D6D6">╭──────────────────────────────────────────────────────────────╮</tspan></text>
-  <text x="26" y="77" xml:space="preserve"><tspan fill="#61D6D6">│</tspan><tspan fill="#F2F2F2">                        S W A R L E X                         </tspan><tspan fill="#61D6D6">│</tspan></text>
-  <text x="26" y="96" xml:space="preserve"><tspan fill="#61D6D6">│</tspan><tspan fill="#767676">                        Control Center                        </tspan><tspan fill="#61D6D6">│</tspan></text>
-  <text x="26" y="115" xml:space="preserve"><tspan fill="#61D6D6">╰──────────────────────────────────────────────────────────────╯</tspan></text>
-  <text x="26" y="153" xml:space="preserve"><tspan fill="#F2F2F2">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#F2F2F2"> Discord   : </tspan><tspan fill="#16C60C">Running          </tspan><tspan fill="#F2F2F2"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#F2F2F2"> Spotify   : </tspan><tspan fill="#16C60C">Running</tspan></text>
-  <text x="26" y="172" xml:space="preserve"><tspan fill="#F2F2F2">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#F2F2F2"> Vencord   : </tspan><tspan fill="#16C60C">Patched          </tspan><tspan fill="#F2F2F2"> </tspan><tspan fill="#F9F1A5">●</tspan><tspan fill="#F2F2F2"> Spicetify : </tspan><tspan fill="#F9F1A5">Update 2.45.3</tspan></text>
-  <text x="26" y="191" xml:space="preserve"><tspan fill="#F2F2F2">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#F2F2F2"> Steam     : </tspan><tspan fill="#16C60C">Running          </tspan><tspan fill="#F2F2F2"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#F2F2F2"> Millennium: </tspan><tspan fill="#16C60C">Active</tspan></text>
-  <text x="26" y="210" xml:space="preserve"><tspan fill="#F2F2F2">  </tspan><tspan fill="#F2F2F2">● Privilege : Standard          </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#F2F2F2"> Updates   : </tspan><tspan fill="#16C60C">Protected</tspan></text>
-  <text x="26" y="248" xml:space="preserve"><tspan fill="#767676">────────────────────────────────────────────────────────────────</tspan></text>
-  <text x="26" y="286" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#61D6D6">1</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#61D6D6">Discord        </tspan><tspan fill="#F2F2F2">Patch Discord with Vencord &amp; Plugins</tspan></text>
-  <text x="26" y="305" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#16C60C">2</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#16C60C">Spotify        </tspan><tspan fill="#F2F2F2">Spicetify Mods, Updates &amp; Protection</tspan></text>
-  <text x="26" y="324" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#3B78FF">3</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#3B78FF">Steam          </tspan><tspan fill="#F2F2F2">Millennium Themes, Plugins &amp; Updates</tspan></text>
-  <text x="26" y="362" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#61D6D6">4</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#61D6D6">App Updater    </tspan><tspan fill="#F2F2F2">Scan &amp; Upgrade Installed Apps [Winget]</tspan></text>
-  <text x="26" y="381" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#B4009E">5</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#B4009E">Backup         </tspan><tspan fill="#F2F2F2">Full Profile Backup &amp; Restore [.zip]</tspan></text>
-  <text x="26" y="419" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#E74856">6</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#E74856">Repair         </tspan><tspan fill="#F2F2F2">Scan &amp; Fix Common Problems [1-Click]</tspan></text>
-  <text x="26" y="438" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#F9F1A5">7</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#F9F1A5">Settings       </tspan><tspan fill="#F2F2F2">Preferences, Admin Mode &amp; Logs</tspan></text>
-  <text x="26" y="476" xml:space="preserve"><tspan fill="#F2F2F2">  [</tspan><tspan fill="#767676">0</tspan><tspan fill="#F2F2F2">]  </tspan><tspan fill="#767676">Exit</tspan></text>
-  <text x="26" y="514" xml:space="preserve"><tspan fill="#767676">────────────────────────────────────────────────────────────────</tspan></text>
-  <text x="26" y="552" xml:space="preserve"><tspan fill="#F2F2F2">  </tspan><tspan fill="#61D6D6">›</tspan><tspan fill="#F2F2F2"> Select an option [0-7]: </tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="658" height="664" viewBox="0 0 658 664" role="img" aria-label="Swarlex Manager [Standard]">
+  <defs><filter id="s" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#000" flood-opacity=".35"/></filter></defs>
+  <style>.t{font-family:&quot;Cascadia Mono&quot;,&quot;Cascadia Code&quot;,Consolas,&quot;SF Mono&quot;,Menlo,&quot;DejaVu Sans Mono&quot;,monospace;font-size:14px;white-space:pre}.u{font-family:&quot;Segoe UI Variable Display&quot;,&quot;Segoe UI&quot;,system-ui,-apple-system,&quot;Helvetica Neue&quot;,Arial,sans-serif;font-size:12px}</style>
+  <g transform="translate(22 22)">
+    <rect width="614" height="620" rx="9" fill="#0C0C0C" stroke="#2E2E2E" filter="url(#s)"/>
+    <path d="M9 0h596a9 9 0 0 1 9 9v31H0V9a9 9 0 0 1 9-9z" fill="#202020"/>
+    <path d="M10 40 V14a6 6 0 0 1 6-6h232a6 6 0 0 1 6 6v26z" fill="#0C0C0C"/>
+    <rect x="24" y="18" width="14" height="12" rx="2" fill="none" stroke="#9A9A9A"/><path d="M27 22l2.5 2-2.5 2M31 27h4" stroke="#9A9A9A" fill="none"/>
+    <text class="u" x="48" y="29" fill="#E6E6E6">Swarlex Manager [Standard]</text>
+    <path d="M232 20l8 8M240 20l-8 8" stroke="#9A9A9A" stroke-width="1.2"/>
+    <path d="M272 18v12M266 24h12" stroke="#9A9A9A" stroke-width="1.2"/><path d="M296 22l4 4 4-4" stroke="#9A9A9A" stroke-width="1.2" fill="none"/>
+    <path d="M504 22h10" stroke="#CFCFCF"/><rect x="548" y="17" width="10" height="10" fill="none" stroke="#CFCFCF"/><path d="M592 17l10 10M602 17l-10 10" stroke="#CFCFCF"/>
+    <rect x="32.225" y="61" width="532" height="60" rx="7" fill="none" stroke="#61D6D6" stroke-width="1.6"/>
+    <text class="t" x="298.4" y="90" text-anchor="middle" fill="#F2F2F2" font-weight="700">S W A R L E X</text>
+    <text class="t" x="298.4" y="110" text-anchor="middle" fill="#767676">Control Center</text>
+    <text class="t" x="28" y="170" xml:space="preserve"><tspan fill="#CCCCCC">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Discord   : </tspan><tspan fill="#16C60C">Running          </tspan><tspan fill="#CCCCCC"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Spotify   : </tspan><tspan fill="#16C60C">Running</tspan></text>
+    <text class="t" x="28" y="190" xml:space="preserve"><tspan fill="#CCCCCC">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Vencord   : </tspan><tspan fill="#16C60C">Patched          </tspan><tspan fill="#CCCCCC"> </tspan><tspan fill="#F9F1A5">●</tspan><tspan fill="#CCCCCC"> Spicetify : </tspan><tspan fill="#F9F1A5">Update 2.45.3</tspan></text>
+    <text class="t" x="28" y="210" xml:space="preserve"><tspan fill="#CCCCCC">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Steam     : </tspan><tspan fill="#16C60C">Running          </tspan><tspan fill="#CCCCCC"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Millennium: </tspan><tspan fill="#16C60C">Active</tspan></text>
+    <text class="t" x="28" y="230" xml:space="preserve"><tspan fill="#CCCCCC">  ● Privilege : </tspan><tspan fill="#F2F2F2">Standard         </tspan><tspan fill="#CCCCCC"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Updates   : </tspan><tspan fill="#16C60C">Protected</tspan></text>
+    <path d="M28 265h541" stroke="#767676" stroke-width="1.2"/>
+    <text class="t" x="28" y="310" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#61D6D6">1</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#61D6D6">Discord        </tspan><tspan fill="#CCCCCC">Patch Discord with Vencord &amp; Plugins</tspan></text>
+    <text class="t" x="28" y="330" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#16C60C">2</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#16C60C">Spotify        </tspan><tspan fill="#CCCCCC">Spicetify Mods, Updates &amp; Protection</tspan></text>
+    <text class="t" x="28" y="350" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#3B78FF">3</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#3B78FF">Steam          </tspan><tspan fill="#CCCCCC">Millennium Themes, Plugins &amp; Updates</tspan></text>
+    <text class="t" x="28" y="390" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#61D6D6">4</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#61D6D6">App Updater    </tspan><tspan fill="#CCCCCC">Scan &amp; Upgrade Installed Apps [Winget]</tspan></text>
+    <text class="t" x="28" y="410" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#B4009E">5</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#B4009E">Backup         </tspan><tspan fill="#CCCCCC">Full Profile Backup &amp; Restore [.zip]</tspan></text>
+    <text class="t" x="28" y="450" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#E74856">6</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#E74856">Repair         </tspan><tspan fill="#CCCCCC">Scan &amp; Fix Common Problems [1-Click]</tspan></text>
+    <text class="t" x="28" y="470" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#F9F1A5">7</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#F9F1A5">Settings       </tspan><tspan fill="#CCCCCC">Preferences, Admin Mode &amp; Logs</tspan></text>
+    <text class="t" x="28" y="510" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#767676">0</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#767676">Exit           </tspan></text>
+    <path d="M28 545h541" stroke="#767676" stroke-width="1.2"/>
+    <text class="t" x="28" y="590" xml:space="preserve"><tspan fill="#CCCCCC">  </tspan><tspan fill="#61D6D6">›</tspan><tspan fill="#CCCCCC"> Select an option [0-7]: </tspan><tspan fill="#F2F2F2">_</tspan></text>
+  </g>
 </svg>

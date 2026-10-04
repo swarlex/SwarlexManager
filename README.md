@@ -1,8 +1,11 @@
 <div align="center">
 
-# Swarlex Manager
+<img src="docs/banner.svg" alt="Swarlex Manager - one control center for Vencord, Spicetify and Millennium" width="100%">
 
-**One control center for your Windows client mods - Vencord, Spicetify and Millennium - in a single double-click script.**
+<br>
+
+**Install, update, repair and back up Vencord, Spicetify and Millennium from one double-click script.**
+
 
 [![Latest release](https://img.shields.io/github/v/release/swarlex/swarlex-manager?label=release&color=3fb950&cacheSeconds=600)](https://github.com/swarlex/swarlex-manager/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/swarlex/swarlex-manager/total?color=61d6d6&cacheSeconds=600)](https://github.com/swarlex/swarlex-manager/releases)
@@ -15,13 +18,26 @@
 
 <br>
 
-<img src="docs/main-menu.svg" alt="Swarlex Manager main menu" width="640">
+<img src="docs/main-menu.svg" alt="Swarlex Manager main menu" width="660">
 
 </div>
 
 Swarlex Manager is a menu-driven console tool that installs, updates, repairs and backs up the mods you run on
 Discord, Spotify and Steam. It is a single `.bat` file with no installer: everything it needs is downloaded
 from the official sources the first time it is needed, and it keeps itself up to date from this repository.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/discord.svg" alt="Discord and Vencord menu"><br><sub><b>Discord &amp; Vencord</b></sub></td>
+    <td align="center"><img src="docs/spotify.svg" alt="Spotify and Spicetify menu"><br><sub><b>Spotify &amp; Spicetify</b></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/steam.svg" alt="Steam and Millennium menu"><br><sub><b>Steam &amp; Millennium</b></sub></td>
+    <td align="center"><img src="docs/settings.svg" alt="Settings menu"><br><sub><b>Settings</b></sub></td>
+  </tr>
+</table>
 
 ## Features
 
@@ -47,7 +63,7 @@ from the official sources the first time it is needed, and it keeps itself up to
 
 ### Everything else
 
-<p align="center"><img src="docs/repair.svg" alt="One-click Repair" width="640"></p>
+<p align="center"><img src="docs/repair.svg" alt="One-click Repair" width="660"></p>
 
 - **App Updater** - lists every app with a pending update through `winget` and upgrades them one by one.
 - **Backup & restore** - one `.zip` with your Vencord settings, userplugins, Spicetify and Millennium data.
@@ -89,10 +105,11 @@ itself before installing an update.
 
 ## Updating
 
-Swarlex checks for a new version in the background every time it starts.
+Swarlex looks for a new version every time it starts. The check takes a moment, is silent when there is
+nothing new, and is skipped when you are offline.
 
-- **Auto-Update on** (the default): a new version found by one start is installed at the next start,
-  before anything else runs - Swarlex downloads it, verifies its SHA-256, swaps itself and reopens.
+- **Auto-Update on** (the default): a new version is installed as soon as you open Swarlex, before anything
+  else runs - Swarlex downloads it, verifies its SHA-256, swaps itself and reopens.
 - **Auto-Update off** (*Settings > [9]*): the *Settings* entry on the main menu announces the new version,
   and *Settings > [8] Swarlex Update* shows what changed and installs it when you confirm.
 
@@ -152,7 +169,7 @@ Everything below can be undone from inside Swarlex:
 
 The [release workflow](.github/workflows/release.yml) checks that the tag matches `SWX_VERSION`, publishes
 `Swarlex-Manager.bat` with its `.sha256`, and uses the changelog section as the release notes. Every
-installed copy then offers the update on its next start.
+installed copy then installs the update the next time it is opened.
 
 ## Disclaimer
 

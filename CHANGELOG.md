@@ -2,6 +2,13 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.4] - 2026-10-04
+
+- Auto-Update installs a new version the first time Swarlex is opened after its release. Before, one start
+  only noticed it and the next start installed it. The check is silent and skipped when you are offline.
+- Release notes in *Swarlex Update* no longer show markdown leftovers or the checksum line, and the
+  update message fits the window.
+
 ## [1.1.3] - 2026-10-04
 
 - Fixed "Could not reach GitHub: (403) Forbidden". The GitHub API allows only 60 calls an hour per

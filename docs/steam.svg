@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="658" height="544" viewBox="0 0 658 544" role="img" aria-label="Swarlex Manager [Standard]">
+  <defs><filter id="s" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#000" flood-opacity=".35"/></filter></defs>
+  <style>.t{font-family:&quot;Cascadia Mono&quot;,&quot;Cascadia Code&quot;,Consolas,&quot;SF Mono&quot;,Menlo,&quot;DejaVu Sans Mono&quot;,monospace;font-size:14px;white-space:pre}.u{font-family:&quot;Segoe UI Variable Display&quot;,&quot;Segoe UI&quot;,system-ui,-apple-system,&quot;Helvetica Neue&quot;,Arial,sans-serif;font-size:12px}</style>
+  <g transform="translate(22 22)">
+    <rect width="614" height="500" rx="9" fill="#0C0C0C" stroke="#2E2E2E" filter="url(#s)"/>
+    <path d="M9 0h596a9 9 0 0 1 9 9v31H0V9a9 9 0 0 1 9-9z" fill="#202020"/>
+    <path d="M10 40 V14a6 6 0 0 1 6-6h232a6 6 0 0 1 6 6v26z" fill="#0C0C0C"/>
+    <rect x="24" y="18" width="14" height="12" rx="2" fill="none" stroke="#9A9A9A"/><path d="M27 22l2.5 2-2.5 2M31 27h4" stroke="#9A9A9A" fill="none"/>
+    <text class="u" x="48" y="29" fill="#E6E6E6">Swarlex Manager [Standard]</text>
+    <path d="M232 20l8 8M240 20l-8 8" stroke="#9A9A9A" stroke-width="1.2"/>
+    <path d="M272 18v12M266 24h12" stroke="#9A9A9A" stroke-width="1.2"/><path d="M296 22l4 4 4-4" stroke="#9A9A9A" stroke-width="1.2" fill="none"/>
+    <path d="M504 22h10" stroke="#CFCFCF"/><rect x="548" y="17" width="10" height="10" fill="none" stroke="#CFCFCF"/><path d="M592 17l10 10M602 17l-10 10" stroke="#CFCFCF"/>
+    <rect x="32.225" y="61" width="532" height="40" rx="7" fill="none" stroke="#3B78FF" stroke-width="1.6"/>
+    <text class="t" x="298.4" y="90" text-anchor="middle" fill="#F2F2F2" font-weight="700">STEAM &amp; MILLENNIUM CONTROLS</text>
+    <text class="t" x="28" y="150" xml:space="preserve"><tspan fill="#CCCCCC">  </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Steam     : </tspan><tspan fill="#16C60C">Running          </tspan><tspan fill="#CCCCCC"> </tspan><tspan fill="#16C60C">●</tspan><tspan fill="#CCCCCC"> Millennium: </tspan><tspan fill="#16C60C">Active</tspan></text>
+    <text class="t" x="28" y="170" xml:space="preserve"><tspan fill="#CCCCCC">  ● Version   : </tspan><tspan fill="#61D6D6">v3.5.0           </tspan><tspan fill="#CCCCCC"> ● Add-ons   : </tspan><tspan fill="#61D6D6">4 plugins, 1 theme</tspan></text>
+    <path d="M28 205h541" stroke="#767676" stroke-width="1.2"/>
+    <text class="t" x="28" y="250" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#16C60C">1</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#16C60C">Install / Update    </tspan><tspan fill="#CCCCCC">Latest Signed Release from GitHub</tspan></text>
+    <text class="t" x="28" y="270" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#B4009E">2</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#B4009E">Restart Steam       </tspan><tspan fill="#CCCCCC">Reload Steam to Apply Changes</tspan></text>
+    <text class="t" x="28" y="310" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#F9F1A5">3</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#F9F1A5">Manage Add-ons      </tspan><tspan fill="#CCCCCC">Plugins On / Off, Pick Theme, Delete</tspan></text>
+    <text class="t" x="28" y="330" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#F9F1A5">4</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#F9F1A5">Open Folder         </tspan><tspan fill="#CCCCCC">Open the millennium Folder</tspan></text>
+    <text class="t" x="28" y="370" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#61D6D6">5</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#61D6D6">Clean Cache         </tspan><tspan fill="#CCCCCC">Clear Steam Web Cache - Login Is Kept</tspan></text>
+    <text class="t" x="28" y="390" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#E74856">6</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#E74856">Uninstall           </tspan><tspan fill="#CCCCCC">Remove Millennium, Keep Your Add-ons</tspan></text>
+    <text class="t" x="28" y="430" xml:space="preserve"><tspan fill="#CCCCCC">  [</tspan><tspan fill="#767676">0</tspan><tspan fill="#CCCCCC">]  </tspan><tspan fill="#767676">Back                </tspan><tspan fill="#CCCCCC">Return to Main Menu</tspan></text>
+    <path d="M28 465h541" stroke="#767676" stroke-width="1.2"/>
+  </g>
+</svg>
