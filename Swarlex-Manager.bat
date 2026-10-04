@@ -3,7 +3,7 @@ setlocal EnableExtensions EnableDelayedExpansion
 
 :: =============================================================
 :: SWARLEX MANAGER - CONTROL CENTER
-:: https://github.com/swarlex/swarlex-manager
+:: https://github.com/swarlex/SwarlexManager
 ::
 :: Copyright (C) 2026 swarlex
 :: This program is free software: you can redistribute it and/or modify it under the terms of
@@ -18,8 +18,8 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.4"
-set "SWX_REPO=swarlex/swarlex-manager"
+set "SWX_VERSION=1.1.5"
+set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
 set "SWX_UPDATE_FILE=%TEMP%\swarlex-updates.txt"
@@ -2476,13 +2476,26 @@ function Get-LatestRelease([string]$repo, [switch]$Full, [int]$TimeoutSec = 15) 
     # website as well (without release notes).
     $ua = 'Swarlex-Manager'
     function Get-WebTag {
-        $req = [Net.HttpWebRequest]::Create('https://github.com/' + $repo + '/releases/latest')
-        $req.Method = 'HEAD'; $req.AllowAutoRedirect = $false; $req.UserAgent = $ua; $req.Timeout = $TimeoutSec * 1000
-        $res = $req.GetResponse()
-        try { $loc = [string]$res.Headers['Location'] } finally { $res.Close() }
-        if ($loc -notmatch '/releases/tag/([^/?#]+)$') { throw 'GitHub did not report a latest release' }
-        return [Uri]::UnescapeDataString($Matches[1])
+        # A renamed or moved repository answers with a redirect to its new name first; follow it and
+        # remember the new name, since the download links below are built from it.
+        $url = 'https://github.com/' + $script:webRepo + '/releases/latest'
+        for ($hop = 0; $hop -lt 4; $hop++) {
+            $req = [Net.HttpWebRequest]::Create($url)
+            $req.Method = 'HEAD'; $req.AllowAutoRedirect = $false; $req.UserAgent = $ua; $req.Timeout = $TimeoutSec * 1000
+            $res = $req.GetResponse()
+            try { $loc = [string]$res.Headers['Location'] } finally { $res.Close() }
+            if (-not $loc) { break }
+            $loc = ([Uri]::new([Uri]$url, $loc)).AbsoluteUri
+            if ($loc -match '^https://github\.com/([^/]+/[^/]+)/releases/tag/([^/?#]+)$') {
+                $script:webRepo = $Matches[1]
+                return [Uri]::UnescapeDataString($Matches[2])
+            }
+            if ($loc -notmatch '^https://github\.com/[^/]+/[^/]+/releases/latest$') { break }
+            $url = $loc
+        }
+        throw 'GitHub did not report a latest release'
     }
+    $script:webRepo = $repo
     if (-not $Full) {
         try { return [pscustomobject]@{ tag_name = (Get-WebTag); body = ''; assets = @() } } catch { }
     }
@@ -2494,8 +2507,8 @@ function Get-LatestRelease([string]$repo, [switch]$Full, [int]$TimeoutSec = 15) 
     }
     try {
         $tag = Get-WebTag
-        $html = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 20 -UserAgent $ua -Uri ('https://github.com/' + $repo + '/releases/expanded_assets/' + $tag)).Content
-        $prefix = '/' + $repo + '/releases/download/' + $tag + '/'
+        $html = (Invoke-WebRequest -UseBasicParsing -TimeoutSec 20 -UserAgent $ua -Uri ('https://github.com/' + $script:webRepo + '/releases/expanded_assets/' + $tag)).Content
+        $prefix = '/' + $script:webRepo + '/releases/download/' + $tag + '/'
         $assets = @([regex]::Matches($html, 'href="(' + [regex]::Escape($prefix) + '[^"]+)"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique |
             ForEach-Object { [pscustomobject]@{ name = [Uri]::UnescapeDataString($_.Substring($prefix.Length)); browser_download_url = 'https://github.com' + $_ } })
         return [pscustomobject]@{ tag_name = $tag; body = ''; assets = $assets }

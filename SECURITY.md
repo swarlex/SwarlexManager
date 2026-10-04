@@ -3,7 +3,7 @@
 ## Reporting a problem
 
 Please report security problems **privately** through
-[GitHub's private vulnerability reporting](https://github.com/swarlex/swarlex-manager/security/advisories/new),
+[GitHub's private vulnerability reporting](https://github.com/swarlex/SwarlexManager/security/advisories/new),
 not as a public issue. You will get an answer as soon as possible, and a fixed release reaches every
 installed copy through the built-in updater.
 
@@ -20,5 +20,5 @@ installed copy through the built-in updater.
 
 ## Supported versions
 
-Only the [latest release](https://github.com/swarlex/swarlex-manager/releases/latest) receives fixes. With
+Only the [latest release](https://github.com/swarlex/SwarlexManager/releases/latest) receives fixes. With
 Auto-Update on (the default) you are always on it.

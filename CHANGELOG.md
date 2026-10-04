@@ -2,6 +2,11 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.5] - 2026-10-04
+
+- The repository is now [swarlex/SwarlexManager](https://github.com/swarlex/SwarlexManager). Update checks
+  follow a renamed repository by themselves, so older copies keep finding new versions.
+
 ## [1.1.4] - 2026-10-04
 
 - Auto-Update installs a new version the first time Swarlex is opened after its release. Before, one start
