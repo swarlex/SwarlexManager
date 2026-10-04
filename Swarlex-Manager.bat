@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.5"
+set "SWX_VERSION=1.1.6"
 set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -153,7 +153,7 @@ exit /b 0
 :: -------------------------------------------------------------
 :REFRESH_PATH
 :: Rebuilt from the original PATH every time so repeated calls never grow it past cmd's limit
-set "PATH=%LOCALAPPDATA%\pnpm\bin;%LOCALAPPDATA%\pnpm;%APPDATA%\npm;%ProgramFiles%\nodejs;%LOCALAPPDATA%\Programs\nodejs;%ProgramFiles%\Git\cmd;%LOCALAPPDATA%\Programs\Git\cmd;%LOCALAPPDATA%\spicetify;%APPDATA%\spicetify;!SWX_BASE_PATH!"
+set "PATH=%LOCALAPPDATA%\pnpm\bin;%LOCALAPPDATA%\pnpm;%APPDATA%\npm;%LOCALAPPDATA%\Microsoft\WinGet\Links;%ProgramFiles%\nodejs;%LOCALAPPDATA%\Programs\nodejs;%ProgramFiles%\Git\cmd;%LOCALAPPDATA%\Programs\Git\cmd;%LOCALAPPDATA%\spicetify;%APPDATA%\spicetify;!SWX_BASE_PATH!"
 if defined PNPM_HOME set "PATH=!PNPM_HOME!\bin;!PNPM_HOME!;!PATH!"
 exit /b 0
 
@@ -668,6 +668,8 @@ if errorlevel 1 (
     echo.
     echo !INDENT!!C_YELLOW![*] pnpm not found. Installing globally via npm...!C_RESET!
     call :RUN_TOOL npm install -g pnpm
+    call :REFRESH_PATH
+    where pnpm >nul 2>&1 || call :WINGET_INSTALL pnpm.pnpm "pnpm"
     call :REFRESH_PATH
 )
 
@@ -2561,7 +2563,9 @@ function Get-ToolLines([string]$raw) {
 }
 
 function Invoke-Tool([string]$exe, [string]$argLine) {
-    $cmd = Get-Command $exe -ErrorAction SilentlyContinue
+    # Only real programs: npm and pnpm also install a .ps1 shim that PowerShell would pick first,
+    # and a script cannot be started as a process ("not a valid Win32 application").
+    $cmd = @(Get-Command $exe -CommandType Application -ErrorAction SilentlyContinue | Where-Object { $_.Extension -match '^\.(exe|cmd|bat|com)$' })[0]
     if (-not $cmd) { Say ('[x] ' + $exe + ' was not found.') 'Red'; return 9009 }
     # Output files of earlier runs that a still-running Spotify kept open can go now
     Get-ChildItem -LiteralPath $env:TEMP -Filter 'swarlex-tool-*' -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue

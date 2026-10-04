@@ -2,6 +2,13 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.6] - 2026-10-04
+
+- Fixed "pnpm is not installed and could not be installed automatically" on PCs without pnpm. Node.js
+  also installs `npm.ps1`, which Swarlex picked and could not start; it now always runs the real program.
+  The same fix covers `pnpm install` when pnpm itself came from npm.
+- If npm cannot install pnpm, Swarlex installs it with `winget` instead.
+
 ## [1.1.5] - 2026-10-04
 
 - The repository is now [swarlex/SwarlexManager](https://github.com/swarlex/SwarlexManager). Update checks
