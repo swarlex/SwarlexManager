@@ -7,7 +7,6 @@
 **Install, update, repair and back up Vencord, Spicetify and Millennium from one double-click script.**
 
 [![Latest release](https://img.shields.io/github/v/release/swarlex/SwarlexManager?label=release&color=3fb950&cacheSeconds=600)](https://github.com/swarlex/SwarlexManager/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/swarlex/SwarlexManager/total?color=61d6d6&cacheSeconds=600)](https://github.com/swarlex/SwarlexManager/releases)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078d6)
 
