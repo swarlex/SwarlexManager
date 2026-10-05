@@ -27,6 +27,10 @@ A few rules keep it working on every Windows 10 and 11 machine:
 - **Undo first.** Anything that changes Discord, Spotify or Steam files must leave a way back
   (a backup, a snapshot or an uninstall option).
 
+The **Build** check runs on every push and pull request and catches the mechanical mistakes: lost CRLF
+endings, a PowerShell block that no longer parses, a `call`/`goto` to a label that does not exist, or a
+version without a CHANGELOG entry. Run it locally with `powershell -File .github\scripts\check.ps1`.
+
 Test your change by running the script: open every menu you touched, and try the failure paths too
 (no internet, the app not installed, the app running).
 

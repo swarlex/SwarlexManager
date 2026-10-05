@@ -1,0 +1,37 @@
+name: Build
+
+# Checks Swarlex-Manager.bat on every push and pull request: Windows line endings, a changelog entry for
+# its version, every embedded PowerShell block parsing on Windows PowerShell 5.1, and every call/goto
+# target existing. The checked file is kept as a download with its SHA-256.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check Swarlex-Manager.bat
+        shell: powershell
+        run: .\.github\scripts\check.ps1
+
+      - name: Checksum
+        shell: powershell
+        run: |
+          $hash = (Get-FileHash Swarlex-Manager.bat -Algorithm SHA256).Hash.ToLower()
+          "$hash  Swarlex-Manager.bat" | Set-Content Swarlex-Manager.bat.sha256 -Encoding ascii
+          "SHA-256: $hash"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Swarlex-Manager
+          path: |
+            Swarlex-Manager.bat
+            Swarlex-Manager.bat.sha256
