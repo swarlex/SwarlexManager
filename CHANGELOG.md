@@ -2,6 +2,13 @@
 
 All notable changes to Swarlex Manager are listed here. Versions follow [Semantic Versioning](https://semver.org).
 
+## [1.1.8] - 2026-10-05
+
+- Faster start: the update check reads the latest version with Windows' built-in `curl` and only starts
+  PowerShell when there is something to install (about 0.2 s saved on every start).
+- Faster Discord and Spotify menus: Git, Node.js, pnpm and the Spicetify CLI are looked up once per
+  session instead of on every visit.
+
 ## [1.1.7] - 2026-10-04
 
 - Restore now brings your Spotify setup back for real: Spicetify is applied right after the restore, so the

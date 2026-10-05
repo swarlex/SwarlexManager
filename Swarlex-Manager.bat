@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.7"
+set "SWX_VERSION=1.1.8"
 set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -657,6 +657,8 @@ exit /b 0
 :: -------------------------------------------------------------
 :ENSURE_VENCORD_TOOLS
 call :REFRESH_PATH
+:: Git, Node.js and pnpm are looked up once per session - six "where" calls cost ~0.2 s every time
+if defined VENCORD_TOOLS_OK goto ENSURE_VENCORD_SOURCE
 call :SPINNER_STEP "Checking build tools [Git, Node.js, pnpm]..."
 
 where git >nul 2>&1 || call :WINGET_INSTALL Git.Git "Git"
@@ -682,7 +684,9 @@ for %%T in (git node pnpm) do (
     )
 )
 if "!TOOLS_OK!"=="0" exit /b 1
+set "VENCORD_TOOLS_OK=1"
 
+:ENSURE_VENCORD_SOURCE
 :: Clone Vencord source if missing
 if not exist "!VENCORD_DIR!\package.json" (
     echo.
@@ -737,6 +741,8 @@ exit /b 0
 
 :ENSURE_SPOTIFY_TOOLS
 call :REFRESH_PATH
+:: Looked up once per session, like the Vencord tools
+if defined SPICE_TOOLS_OK exit /b 0
 call :SPINNER_STEP "Checking Spicetify CLI environment..."
 where spicetify >nul 2>&1
 if errorlevel 1 (
@@ -754,6 +760,7 @@ if errorlevel 1 (
     echo !INDENT!!C_GREEN![+] Spicetify installed successfully.!C_RESET!
     timeout /t 2 >nul 2>&1
 )
+set "SPICE_TOOLS_OK=1"
 exit /b 0
 
 :: -------------------------------------------------------------
@@ -2155,6 +2162,13 @@ goto MENU_SETTINGS
 :: Asks GitHub at every start (a few hundred ms, silent when there is nothing new or no internet),
 :: so a new version is installed the first time Swarlex is opened after its release.
 set "SWX_SU_MODE=auto"
+:: Quick look first: curl (part of Windows 10 1803 and later) reads the latest tag from GitHub's
+:: redirect in ~0.1 s. When that is this version - most starts - PowerShell is not needed at all.
+:: Anything else (a newer tag, a renamed repository, no answer) goes through the full check below.
+set "SU_TAG="
+if exist "%SystemRoot%\System32\curl.exe" for /f "delims=" %%U in ('""%SystemRoot%\System32\curl.exe" -s -m 6 -o NUL -w "%%{redirect_url}" "https://github.com/!SWX_REPO!/releases/latest" 2^>nul"') do set "SU_TAG=%%U"
+if defined SU_TAG set "SU_TAG=!SU_TAG:*/releases/tag/=!"
+if defined SU_TAG if /i "!SU_TAG!"=="v!SWX_VERSION!" exit /b 1
 call :RUN_PS SELFUPDATE
 set "SU_RC=!errorlevel!"
 if "!SU_RC!"=="10" exit /b 1
