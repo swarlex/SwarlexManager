@@ -2741,7 +2741,7 @@ if ($env:SWX_SU_MODE -eq 'check') {
     $changes = @(([string]$rel.body) -split '(?m)^\s*---\s*$')[0]
     $notes = @($changes -split "`r?`n" |
         Where-Object { $_ -notmatch 'SHA-256' } |
-        ForEach-Object { ($_ -replace '^[\s#>*-]+', '' -replace '\[([^\]]+)\]\([^)]+\)', '$1' -replace '\*\*|`', '').Trim() } | Where-Object { $_ } | Select-Object -First 10)
+        ForEach-Object { ($_ -replace '^[\s#>*-]+', '' -replace '\[([^\]]+)\]\([^)]+\)', '$1' -replace '\*|`', '').Trim() } | Where-Object { $_ } | Select-Object -First 10)
     if ($notes.Count) {
         Write-Host ''
         Write-Host ($pad + "What's new:") -ForegroundColor White

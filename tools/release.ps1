@@ -58,8 +58,14 @@ $setVersion = {
 }
 & $setVersion $Version
 
-# 2. checks (a failed check stops here: nothing is pushed or published)
+# the changes collected under "## Unreleased" become this version's section
 $log = Join-Path $root 'docs\CHANGELOG.md'
+$logText = [IO.File]::ReadAllText($log)
+if ($logText -notmatch "(?m)^## $([regex]::Escape($Version))\s*$" -and $logText -match '(?m)^## Unreleased\s*$') {
+    [IO.File]::WriteAllText($log, ([regex]::new('(?m)^## Unreleased(?=\s*$)')).Replace($logText, "## $Version", 1), (New-Object Text.UTF8Encoding $false))
+}
+
+# 2. checks (a failed check stops here: nothing is pushed or published)
 & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root '.github\scripts\check.ps1') -Path $bat -Changelog $log
 if ($LASTEXITCODE -ne 0) { & $setVersion "$cur"; throw 'Checks failed, nothing was published.' }
 $dist = Join-Path $root 'dist'
