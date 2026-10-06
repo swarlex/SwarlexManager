@@ -4,3 +4,6 @@
 *.tmp
 *.zip
 *.sha256
+
+# Built release files (tools/release.ps1)
+dist/

@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.8"
+set "SWX_VERSION=1.1.9"
 set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -2737,9 +2737,11 @@ if ($env:SWX_SU_MODE -eq 'auto') {
 
 if ($env:SWX_SU_MODE -eq 'check') {
     Say ('[*] Swarlex v' + $latest + ' is available - you have v' + $cur + '.') 'Cyan'
-    $notes = @(([string]$rel.body) -split "`r?`n" |
+    # Only the changes: the download line and the scan links come after a "---" line in the release notes
+    $changes = @(([string]$rel.body) -split '(?m)^\s*---\s*$')[0]
+    $notes = @($changes -split "`r?`n" |
         Where-Object { $_ -notmatch 'SHA-256' } |
-        ForEach-Object { ($_ -replace '^[\s#>*-]+', '' -replace '\*\*|`', '').Trim() } | Where-Object { $_ } | Select-Object -First 10)
+        ForEach-Object { ($_ -replace '^[\s#>*-]+', '' -replace '\[([^\]]+)\]\([^)]+\)', '$1' -replace '\*\*|`', '').Trim() } | Where-Object { $_ } | Select-Object -First 10)
     if ($notes.Count) {
         Write-Host ''
         Write-Host ($pad + "What's new:") -ForegroundColor White
