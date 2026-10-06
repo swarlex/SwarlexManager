@@ -1,12 +1,16 @@
+# Checks Swarlex-Manager.bat on GitHub's own Windows runners on every push to main, every release tag and
+# every pull request: Windows line endings, a changelog entry for its version (and, for a tag, that the tag
+# names that version), every embedded PowerShell block parsing on Windows PowerShell 5.1, and every
+# call/goto target existing. The checked file is kept as a download with its SHA-256. The release files are
+# scanned on VirusTotal by virustotal.yml.
 name: Build
 
-# Checks Swarlex-Manager.bat on every push and pull request: Windows line endings, a changelog entry for
-# its version, every embedded PowerShell block parsing on Windows PowerShell 5.1, and every call/goto
-# target existing. The checked file is kept as a download with its SHA-256.
 on:
   push:
-    branches: ['**']
+    branches: [main]
+    tags: ['v*']
   pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,9 +24,11 @@ jobs:
 
       - name: Check Swarlex-Manager.bat
         shell: powershell
-        run: .\.github\scripts\check.ps1
+        run: |
+          $tag = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '' }
+          .\.github\scripts\check.ps1 -Tag $tag
 
-      - name: Checksum
+      - name: SHA-256 of the script
         shell: powershell
         run: |
           $hash = (Get-FileHash Swarlex-Manager.bat -Algorithm SHA256).Hash.ToLower()
@@ -31,7 +37,8 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: Swarlex-Manager
+          name: Swarlex-Manager-${{ github.ref_name }}
           path: |
             Swarlex-Manager.bat
             Swarlex-Manager.bat.sha256
+          if-no-files-found: error

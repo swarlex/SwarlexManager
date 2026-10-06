@@ -11,4 +11,4 @@
 - [ ] `Swarlex-Manager.bat` still has CRLF line endings
 - [ ] Works on Windows PowerShell 5.1 and without administrator rights
 - [ ] New text fits the 64-column card
-- [ ] Added a line to `CHANGELOG.md` under `## [Unreleased]`
+- [ ] Described the change in `docs/CHANGELOG.md` under `## Unreleased`

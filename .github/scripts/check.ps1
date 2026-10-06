@@ -1,6 +1,6 @@
 # Static checks for Swarlex-Manager.bat, run by the Build workflow on every push and pull request.
 # Runs on Windows PowerShell 5.1 - the same PowerShell the embedded blocks run on for users.
-param([string]$Path = 'Swarlex-Manager.bat', [string]$Changelog = 'CHANGELOG.md')
+param([string]$Path = 'Swarlex-Manager.bat', [string]$Changelog = 'docs\CHANGELOG.md', [string]$Tag = '')
 $ErrorActionPreference = 'Stop'
 $failed = 0
 function Pass([string]$msg) { Write-Host "  [ok]   $msg" -ForegroundColor Green }
@@ -20,8 +20,10 @@ if ($ver.Count -ne 1) { Fail "expected one 'set ""SWX_VERSION=x.y.z""' line, fou
 else {
     $v = $ver[0].Groups[1].Value
     Pass "version $v"
-    if ((Test-Path $Changelog) -and ([IO.File]::ReadAllText($Changelog) -match ('(?m)^## \[' + [regex]::Escape($v) + '\]'))) { Pass "CHANGELOG.md has a [$v] section" }
-    else { Fail "CHANGELOG.md has no '## [$v]' section" }
+    if ((Test-Path $Changelog) -and ([IO.File]::ReadAllText($Changelog) -match ('(?m)^## ' + [regex]::Escape($v) + '\s*$'))) { Pass "docs/CHANGELOG.md has a '## $v' section" }
+    else { Fail "docs/CHANGELOG.md has no '## $v' section" }
+    # a release tag must name the version the script carries, or installed copies would never see it as new
+    if ($Tag) { if ($Tag -eq "v$v") { Pass "tag $Tag matches" } else { Fail "tag $Tag does not match SWX_VERSION $v" } }
 }
 
 # 3. Every embedded PowerShell block parses on PowerShell 5.1

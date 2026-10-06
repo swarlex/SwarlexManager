@@ -14,7 +14,7 @@
 
 <sub>Single file · no installer · no admin rights · updates itself</sub>
 
-[Quick start](#quick-start) · [Screenshots](#screenshots) · [Features](#features) · [FAQ](#faq) · [Changelog](CHANGELOG.md)
+[Quick start](#quick-start) · [Screenshots](#screenshots) · [Features](#features) · [FAQ](#faq) · [Changelog](docs/CHANGELOG.md)
 
 <br>
 
@@ -218,8 +218,8 @@ Everything here can be undone from inside Swarlex:
 
 ## Contributing
 
-Bug reports, ideas and pull requests are welcome - [CONTRIBUTING.md](CONTRIBUTING.md) explains how the script
-is put together. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+Bug reports, ideas and pull requests are welcome - [CONTRIBUTING.md](.github/CONTRIBUTING.md) explains how the script
+is put together. Please follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 
 ## Credits & license
 
