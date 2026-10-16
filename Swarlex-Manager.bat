@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.9"
+set "SWX_VERSION=1.2.0"
 set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
@@ -1451,7 +1451,8 @@ icacls "%UPD_DIR%" /remove:d "%USERNAME%" >nul 2>&1
 attrib -r -s -h "%UPD_DIR%" >nul 2>&1
 del /f /q "%UPD_DIR%" 2>nul
 mkdir "%UPD_DIR%" 2>nul
-if exist "%UPD_DIR%\" (
+call :IS_FOLDER "%UPD_DIR%"
+if not errorlevel 1 (
     echo !INDENT!  !C_GREEN![+] Spotify update lock REMOVED.!C_RESET!
     call :LOG "Update Guard" "Spotify updates unlocked"
 ) else (
@@ -1481,7 +1482,9 @@ if not exist "%UPD_DIR%" (
     set "NEED_ADMIN=1"
     exit /b 1
 )
-if exist "%UPD_DIR%\" (
+:: "if exist path\" is true for a plain file too on current Windows, so the folder test is pushd
+call :IS_FOLDER "%UPD_DIR%"
+if not errorlevel 1 (
     echo !INDENT!  !C_RED![ERROR] The Update folder is in use - close Spotify first.!C_RESET!
     call :DLOG ERROR "Update Guard: the Spotify Update folder is in use"
     exit /b 1
@@ -1490,6 +1493,12 @@ attrib +r +s +h "%UPD_DIR%" >nul 2>&1
 icacls "%UPD_DIR%" /deny "%USERNAME%:(W,D)" >nul 2>&1
 echo !INDENT!  !C_GREEN![+] Spotify auto-updates LOCKED successfully.!C_RESET!
 call :LOG "Update Guard" "Spotify updates locked"
+exit /b 0
+
+:IS_FOLDER
+:: Exit 0 when the path is a folder, 1 when it is a file or missing
+pushd "%~1" 2>nul || exit /b 1
+popd
 exit /b 0
 
 :ACTION_SPICETIFY_CLEAN_CACHE
@@ -1784,12 +1793,12 @@ echo !INDENT!!C_MAGENTA!╭─────────────────�
 echo !INDENT!!C_MAGENTA!│!C_WHITE!                FULL PROFILE BACKUP ^& RESTORE                 !C_MAGENTA!│!C_RESET!
 echo !INDENT!!C_MAGENTA!╰──────────────────────────────────────────────────────────────╯!C_RESET!
 echo.
-echo !INDENT!  !C_GRAY!Archive Vencord, userplugins, Spicetify ^& Millennium data!C_RESET!
+echo !INDENT!  !C_GRAY!Vencord, userplugins, Spicetify, Marketplace ^& Millennium!C_RESET!
 echo.
 echo !INDENT!!C_GRAY!────────────────────────────────────────────────────────────────!C_RESET!
 echo.
 echo !INDENT!  !C_WHITE![!C_GREEN!1!C_WHITE!]  !C_GREEN!Backup Profile!C_WHITE!      Create Desktop .zip Archive!C_RESET!
-echo !INDENT!  !C_WHITE![!C_YELLOW!2!C_WHITE!]  !C_YELLOW!Restore Profile!C_WHITE!     Restore from Latest Desktop .zip!C_RESET!
+echo !INDENT!  !C_WHITE![!C_YELLOW!2!C_WHITE!]  !C_YELLOW!Restore Profile!C_WHITE!     Pick a Backup .zip to Restore!C_RESET!
 echo.
 echo !INDENT!  !C_WHITE![!C_RED!3!C_WHITE!]  !C_RED!Undo Last Update!C_WHITE!    Roll Back from a Safety Snapshot!C_RESET!
 echo.
@@ -1815,26 +1824,41 @@ goto MENU_BACKUP
 :ACTION_BACKUP_PROFILE
 echo.
 set "RC=1"
+:: Spotify closes for a moment: its database must not change while it is copied
+call :KILL_SPOTIFY
 call :SPINNER_STEP "Archiving your profile to the Desktop..."
 set "SWX_DESK=!DESK_DIR!"
 call :RUN_PS BACKUP
 if not errorlevel 1 set "RC=0"
+call :RESTART_SPOTIFY_PROC
 goto FINISH_BACKUP
 
 :ACTION_RESTORE_PROFILE
 echo.
 set "RC=1"
-call :SPINNER_STEP "Scanning for latest backup file..."
-set "LATEST_ZIP="
-for /f "delims=" %%F in ('dir /b /a-d /o-d "!DESK_DIR!\Swarlex_Backup_*.zip" 2^>nul') do (
-    if not defined LATEST_ZIP set "LATEST_ZIP=!DESK_DIR!\%%F"
-)
-if not defined LATEST_ZIP (
+call :SPINNER_STEP "Looking for backups..."
+set "SWX_DESK=!DESK_DIR!"
+set "SWX_BACKUP_PICK=%TEMP%\swarlex-backup-pick.txt"
+del /f /q "!SWX_BACKUP_PICK!" >nul 2>&1
+call :RUN_PS BACKUPLIST
+if errorlevel 1 goto FINISH_BACKUP
+:: The newest is [1]; the command line ("restore") always takes it
+set "BK_N=1"
+if not defined CLI_MODE (
     echo.
-    echo !INDENT!  !C_RED![^^!] No Swarlex_Backup_*.zip file found on Desktop.!C_RESET!
+    set /p "BK_N=!PROMPT_INDENT!!C_MAGENTA!›!C_WHITE! Restore which backup? [Enter = 1]: !C_RESET!"
+)
+set "BK_N=!BK_N: =!"
+if not defined BK_N set "BK_N=1"
+set "LATEST_ZIP="
+echo(!BK_N!| findstr /r "^[1-9]$" >nul && call :PICK_FILE_LINE "!SWX_BACKUP_PICK!" !BK_N! LATEST_ZIP
+del /f /q "!SWX_BACKUP_PICK!" >nul 2>&1
+if not defined LATEST_ZIP (
+    echo !INDENT!  !C_RED![x] There is no backup "!BK_N!".!C_RESET!
     goto FINISH_BACKUP
 )
-echo !INDENT!  !C_CYAN![*] Found latest backup: !LATEST_ZIP!!C_RESET!
+echo.
+echo !INDENT!  !C_CYAN![*] Backup: !LATEST_ZIP!!C_RESET!
 echo !INDENT!  !C_YELLOW![^^!] This replaces your Vencord, Spicetify and Millennium data.!C_RESET!
 echo.
 set "DO_REST="
@@ -1960,14 +1984,21 @@ call :RESTART_SPOTIFY_PROC
 call :RESTART_STEAM_PROC
 goto FINISH_BACKUP
 
-:SNAP_PICK_LINE
-:: Arg: 1-based line number in SWX_SNAP_PICK. "for /f skip" needs a literal number, hence a subroutine.
-set /a "SNAP_SKIP=%~1-1"
-if !SNAP_SKIP! EQU 0 (
-    set /p "SNAP_ZIP=" < "!SWX_SNAP_PICK!"
+:PICK_FILE_LINE
+:: Args: file, 1-based line number, variable to set. "for /f skip" needs a literal number.
+set "PICK_VAR=%~3"
+set "%PICK_VAR%="
+set /a "PICK_SKIP=%~2-1"
+if !PICK_SKIP! EQU 0 (
+    set /p "%PICK_VAR%=" < "%~1"
     exit /b 0
 )
-for /f "usebackq skip=%SNAP_SKIP% delims=" %%Z in ("!SWX_SNAP_PICK!") do if not defined SNAP_ZIP set "SNAP_ZIP=%%Z"
+for /f "usebackq skip=%PICK_SKIP% delims=" %%Z in ("%~1") do if not defined %PICK_VAR% set "%PICK_VAR%=%%Z"
+exit /b 0
+
+:SNAP_PICK_LINE
+:: Arg: 1-based line number in SWX_SNAP_PICK
+call :PICK_FILE_LINE "!SWX_SNAP_PICK!" %~1 SNAP_ZIP
 exit /b 0
 
 :UNDO_VENCORD_SOURCE
@@ -2166,7 +2197,8 @@ set "SWX_SU_MODE=auto"
 :: redirect in ~0.1 s. When that is this version - most starts - PowerShell is not needed at all.
 :: Anything else (a newer tag, a renamed repository, no answer) goes through the full check below.
 set "SU_TAG="
-if exist "%SystemRoot%\System32\curl.exe" for /f "delims=" %%U in ('""%SystemRoot%\System32\curl.exe" -s -m 6 -o NUL -w "%%{redirect_url}" "https://github.com/!SWX_REPO!/releases/latest" 2^>nul"') do set "SU_TAG=%%U"
+:: (A release given by the tests through SWX_TEST_RELEASE always goes through the full check)
+if not defined SWX_TEST_RELEASE if exist "%SystemRoot%\System32\curl.exe" for /f "delims=" %%U in ('""%SystemRoot%\System32\curl.exe" -s -m 6 -o NUL -w "%%{redirect_url}" "https://github.com/!SWX_REPO!/releases/latest" 2^>nul"') do set "SU_TAG=%%U"
 if defined SU_TAG set "SU_TAG=!SU_TAG:*/releases/tag/=!"
 if defined SU_TAG if /i "!SU_TAG!"=="v!SWX_VERSION!" exit /b 1
 call :RUN_PS SELFUPDATE
@@ -3939,9 +3971,22 @@ exit 0
 # Safety snapshot (SWX_SNAP_KIND = vencord / spicetify / millennium): only what that change can touch,
 # kept in %APPDATA%\Swarlex Manager\snapshots (newest 5 per kind) for Backup > Undo Last Update.
 # Both use the same zip layout, so RESTORE handles either.
+# Spotify keeps its databases open while it runs: they are read with sharing on, and the LOCK file
+# (only a marker that the database is open) is left out.
+function Copy-Shared([string]$from, [string]$to) {
+    foreach ($file in Get-ChildItem -LiteralPath $from -Recurse -File -Force) {
+        if ($file.Name -eq 'LOCK') { continue }
+        $dest = Join-Path $to $file.FullName.Substring($from.Length).TrimStart('\')
+        New-Item -ItemType Directory -Path (Split-Path $dest) -Force | Out-Null
+        $in = [IO.File]::Open($file.FullName, 'Open', 'Read', 'ReadWrite, Delete')
+        try { $out = [IO.File]::Create($dest); try { $in.CopyTo($out) } finally { $out.Close() } } finally { $in.Close() }
+        [IO.File]::SetLastWriteTimeUtc($dest, $file.LastWriteTimeUtc)
+    }
+}
+
 $kind = [string]$env:SWX_SNAP_KIND
 $snap = [bool]$kind
-$want = if ($snap) { @{ vencord = @('Vencord', 'userplugins'); spicetify = @('spicetify'); millennium = @('millennium') }[$kind] } else { @('Vencord', 'userplugins', 'spicetify', 'millennium') }
+$want = if ($snap) { @{ vencord = @('Vencord', 'userplugins'); spicetify = @('spicetify'); millennium = @('millennium') }[$kind] } else { @('Vencord', 'userplugins', 'spicetify', 'spotifydb', 'millennium') }
 if (-not $want) { Say ('[x] Unknown snapshot kind: ' + $kind) 'Red'; exit 1 }
 $ts = Get-Date -Format 'yyyyMMdd_HHmmss'
 if ($snap) {
@@ -3949,7 +3994,12 @@ if ($snap) {
     New-Item -ItemType Directory -Path $snapDir -Force | Out-Null
     $zip = Join-Path $snapDir ($kind + '_' + $ts + '.zip')
 } else {
-    $zip = Join-Path $env:SWX_DESK ('Swarlex_Backup_' + $ts + '.zip')
+    # The Desktop Explorer shows - it can be on OneDrive or have a translated name, which the batch side's
+    # registry lookup does not always get right. SWX_TEST_DESK pins it in tests.
+    $desk = $env:SWX_DESK
+    $shown = [Environment]::GetFolderPath('Desktop')
+    if ($env:SWX_TEST_DESK) { $desk = $env:SWX_TEST_DESK } elseif ($shown -and (Test-Path -LiteralPath $shown)) { $desk = $shown }
+    $zip = Join-Path $desk ('Swarlex_Backup_' + $ts + '.zip')
 }
 $stage = Join-Path $env:TEMP ('swarlex-backup-' + $ts)
 $parts = @()
@@ -3986,6 +4036,21 @@ try {
         # Backup/Extracted are Spicetify's copy of Spotify's own files; they are version specific and rebuilt by "spicetify backup"
         Copy-Tree $spiceData (Join-Path $stage 'spicetify') @((Join-Path $spiceData 'Backup'), (Join-Path $spiceData 'Extracted'))
         $parts += 'Spicetify'
+    }
+    # Spicetify Marketplace keeps the themes, extensions and snippets installed from it in Spotify's own
+    # browser database (IndexedDB) of the xpui page, not in the spicetify folder
+    $spotDb = Join-Path $env:LOCALAPPDATA 'Spotify\Browser\IndexedDB'
+    if ($want -contains 'spotifydb' -and (Test-Path -LiteralPath $spotDb)) {
+        $dbs = @(Get-ChildItem -LiteralPath $spotDb -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match '^https_xpui\.app\.spotify\.com_\d+\.indexeddb\.(leveldb|blob)$' })
+        # The batch side closes Spotify first; should it still change the database while it is read,
+        # the backup goes on without it instead of failing as a whole
+        try {
+            foreach ($db in $dbs) { Copy-Shared $db.FullName (Join-Path $stage ('spotify-db\' + $db.Name)) }
+            if ($dbs.Count) { $parts += 'Spotify Marketplace data' }
+        } catch {
+            Remove-Item -LiteralPath (Join-Path $stage 'spotify-db') -Recurse -Force -ErrorAction SilentlyContinue
+            Say ('[!] Left out Spotify Marketplace data: ' + $_.Exception.Message) 'Yellow'
+        }
     }
     if ($want -contains 'millennium' -and $env:SWX_STEAM_DIR) {
         # Only the user's part of Millennium: bin and lib are program files that Install / Update brings back
@@ -4058,6 +4123,44 @@ $mb = [math]::Round((Get-Item -LiteralPath $zip).Length / 1MB, 1)
 Say ('[+] Backed up: ' + ($parts -join ', ')) 'Green'
 Write-History 'Backup' ('saved ' + (Split-Path $zip -Leaf) + ' [' + $mb + ' MB]')
 Say ('    ' + $zip + '  [' + $mb + ' MB]') 'DarkGray'
+if ($zip -match '\\OneDrive[^\\]*\\') { Say '    This Desktop syncs to OneDrive - the backup is not encrypted.' 'DarkGray' }
+exit 0
+::SWX_PS_END
+
+::SWX_PS_BEGIN BACKUPLIST
+# Lists the Swarlex_Backup_*.zip files on the Desktop, in Downloads and in Documents (a backup copied from
+# another PC is often still in Downloads), newest first, and writes their paths to SWX_BACKUP_PICK, one per
+# line, for the batch side to pick from. Exit 1 = none found. SWX_TEST_DESK limits the search in tests.
+$ind = ' ' * ([int]$env:SWX_PAD + 2)
+$dirs = @()
+if ($env:SWX_TEST_DESK) { $dirs = @($env:SWX_TEST_DESK) }
+else {
+    $dirs += [Environment]::GetFolderPath('Desktop')
+    $dirs += $env:SWX_DESK
+    try { $dirs += (New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path } catch { }
+    $dirs += Join-Path $env:USERPROFILE 'Downloads'
+    $dirs += [Environment]::GetFolderPath('MyDocuments')
+}
+$dirs = @($dirs | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | ForEach-Object { (Get-Item -LiteralPath $_).FullName.TrimEnd('\') } | Select-Object -Unique)
+# Backups on the Desktop come first: any website can put a file into Downloads, so a newer one there
+# must not become the default choice
+$deskDirs = @($dirs | Select-Object -First 1)
+if ($env:SWX_DESK -and (Test-Path -LiteralPath $env:SWX_DESK)) { $deskDirs += (Get-Item -LiteralPath $env:SWX_DESK).FullName.TrimEnd('\') }
+$found = @($dirs | ForEach-Object { Get-ChildItem -LiteralPath $_ -Filter 'Swarlex_Backup_*.zip' -File -ErrorAction SilentlyContinue } |
+    Sort-Object FullName -Unique | Sort-Object @{ Expression = { if ($deskDirs -contains $_.DirectoryName.TrimEnd('\')) { 0 } else { 1 } } }, @{ Expression = 'LastWriteTime'; Descending = $true } | Select-Object -First 9)
+if ($found.Count -eq 0) {
+    Write-Host ($ind + '[!] No Swarlex_Backup_*.zip found on the Desktop, in Downloads or Documents.') -ForegroundColor Red
+    exit 1
+}
+[IO.File]::WriteAllLines($env:SWX_BACKUP_PICK, [string[]]@($found | ForEach-Object FullName))
+Write-Host ''
+for ($i = 0; $i -lt $found.Count; $i++) {
+    $z = $found[$i]
+    $where = Split-Path $z.DirectoryName -Leaf
+    if ($deskDirs -notcontains $z.DirectoryName.TrimEnd('\')) { $where += '  (not from your Desktop)' }
+    $line = '[{0}]  {1:yyyy-MM-dd HH:mm}  {2,6:N1} MB  {3}' -f ($i + 1), $z.LastWriteTime, ($z.Length / 1MB), $where
+    Write-Host ($ind + $line) -ForegroundColor $(if ($i -eq 0) { 'White' } else { 'Gray' })
+}
 exit 0
 ::SWX_PS_END
 
@@ -4106,6 +4209,14 @@ function Merge-SpiceIni([string]$path, [string]$before) {
     [IO.File]::WriteAllText($path, ($out -join $nl), (New-Object Text.UTF8Encoding $false))
 }
 
+# Deletes a folder; a link (junction) is removed as a link, never followed into where it points
+function Remove-Folder([string]$path) {
+    if (-not (Test-Path -LiteralPath $path)) { return }
+    $item = Get-Item -LiteralPath $path -Force
+    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { [IO.Directory]::Delete($path, $false) }
+    else { Remove-Item -LiteralPath $path -Recurse -Force }
+}
+
 $stage = Join-Path $env:TEMP ('swarlex-restore-' + [guid]::NewGuid().ToString('N'))
 $done = @()
 $failed = $null
@@ -4140,6 +4251,39 @@ try {
         }
     }
     if ($done -contains 'spicetify') { Merge-SpiceIni $spiceIni $iniBefore }
+    # Spotify's database replaces this PC's one as a whole (two databases cannot be merged file by file).
+    # Only the Marketplace database names are taken from a backup. Each one is copied in beside the live
+    # one first and then swapped, so a failure leaves the old one in place; the one replaced is kept as
+    # <name>.swarlex-old-<time> (the newest two of those stay). Spotify is closed by the batch side.
+    $dbStage = Join-Path $stage 'spotify-db'
+    if (Test-Path -LiteralPath $dbStage) {
+        $dbRoot = Join-Path $env:LOCALAPPDATA 'Spotify\Browser\IndexedDB'
+        $stamp = Get-Date -Format 'yyyyMMddHHmmss'
+        $dbDone = 0
+        foreach ($db in @(Get-ChildItem -LiteralPath $dbStage -Directory)) {
+            if ($db.Name -notmatch '^https_xpui\.app\.spotify\.com_\d+\.indexeddb\.(leveldb|blob)$') {
+                Say ('[!] Ignored an unexpected folder in the backup: spotify-db\' + $db.Name) 'Yellow'
+                continue
+            }
+            $target = Join-Path $dbRoot $db.Name
+            $new = $target + '.swarlex-new'
+            $old = $target + '.swarlex-old-' + $stamp
+            try {
+                New-Item -ItemType Directory -Path $dbRoot -Force | Out-Null
+                Remove-Folder $new
+                Copy-Tree $db.FullName $new
+                if (Test-Path -LiteralPath $target) { Rename-Item -LiteralPath $target -NewName (Split-Path $old -Leaf) }
+                try { Rename-Item -LiteralPath $new -NewName $db.Name }
+                catch { if (Test-Path -LiteralPath $old) { Rename-Item -LiteralPath $old -NewName $db.Name }; throw }
+                $dbDone++
+                foreach ($o in @(Get-ChildItem -LiteralPath $dbRoot -Directory -Filter ($db.Name + '.swarlex-old*') | Sort-Object Name -Descending | Select-Object -Skip 2)) { Remove-Folder $o.FullName }
+            } catch {
+                Remove-Folder $new
+                Say ('[!] Kept Spotify''s own Marketplace data: ' + $_.Exception.Message) 'Yellow'
+            }
+        }
+        if ($dbDone) { $done += 'spotify-db' }
+    }
     # Safety snapshots of a Vencord update carry the commit from before it; the batch side puts it back
     $headFile = Join-Path $stage 'vencord-head.txt'
     if ($env:SWX_ROLLBACK_FILE -and (Test-Path -LiteralPath $headFile)) { Copy-Item -LiteralPath $headFile -Destination $env:SWX_ROLLBACK_FILE -Force }
@@ -4153,7 +4297,8 @@ if ($failed) { Say ('[x] Restore failed: ' + $failed) 'Red'; Write-History $labe
 if ($done.Count -eq 0) { Say '[x] The backup has no Vencord, Spicetify or Millennium data.' 'Red'; exit 1 }
 # The batch side applies Spicetify and offers Millennium afterwards, so the restored setup is active
 if ($env:SWX_RESTORED_FILE) { [IO.File]::WriteAllLines($env:SWX_RESTORED_FILE, [string[]]$done) }
-Say ('[+] Restored: ' + ($done -join ', ')) 'Green'
+$names = @{ 'Vencord' = 'Vencord settings'; 'spicetify' = 'Spicetify'; 'spotify-db' = 'Spotify Marketplace data'; 'millennium' = 'Millennium add-ons' }
+Say ('[+] Restored: ' + (($done | ForEach-Object { if ($names.ContainsKey($_)) { $names[$_] } else { $_ } }) -join ', ')) 'Green'
 Write-History $label (($done -join ', ') + ' from ' + (Split-Path $env:SWX_ZIP -Leaf))
 if ($done -contains 'userplugins' -and -not $env:SWX_ROLLBACK_FILE) { Say '    Run Patch Discord to build the restored plugins in.' 'DarkGray' }
 exit 0
@@ -4450,17 +4595,19 @@ function Test-HostsSwarlex([string]$appId) {
 }
 
 function Start-DetachedUpgrade($app) {
+    # The name goes into a .cmd file: characters cmd treats as commands are left out
+    $safeName = $app.Name -replace '[&|<>^%!"()]', ''
     # A classic console window (conhost) is not part of Windows Terminal, so it survives the update;
     # when winget is done it reopens Swarlex, which lands in the freshly updated Terminal again.
     $script = Join-Path $env:TEMP 'swarlex-selfupdate.cmd'
     $lines = @(
         '@echo off',
         'chcp 65001 >nul',
-        ('title Swarlex - updating ' + $app.Name),
+        ('title Swarlex - updating ' + $safeName),
         'echo.',
-        ('echo   Updating ' + $app.Name + ' - Swarlex reopens when it is done.'),
+        ('echo   Updating ' + $safeName + ' - Swarlex reopens when it is done.'),
         'echo.',
-        ('winget upgrade --id ' + $app.Id + ' -e --accept-package-agreements --accept-source-agreements --disable-interactivity'),
+        ('winget ' + (Get-UpgradeArgs $app)),
         'echo.',
         'ping -n 3 127.0.0.1 >nul',
         ('start "" cmd /d /c ""' + $env:SWX_SELF + '""'),
@@ -4498,7 +4645,45 @@ function Get-AppProcesses([string]$appName, [string]$appId) {
     return @($procs)
 }
 
+# --source avoids winget searching (and possibly matching) every source, --silent keeps installers from
+# waiting on a window nobody sees
+function Get-UpgradeArgs($app) {
+    $a = 'upgrade --id ' + $app.Id + ' -e'
+    if ($app.Source -match '^[\w.-]+$') { $a += ' --source ' + $app.Source }
+    return $a + ' --silent --accept-package-agreements --accept-source-agreements --disable-interactivity'
+}
+
+# What a winget exit code means. Ok = the app is up to date afterwards (some codes only ask for a restart).
+function Get-WingetResult([int]$code) {
+    if ($code -eq 0) { return @{ Ok = $true; Note = ''; Code = '0' } }
+    $hex = '0x{0:X8}' -f ([int64]$code -band 0xFFFFFFFFL)
+    $known = @{
+        '0x8A150109' = @($true, 'restart Windows to finish', 'restart')
+        '0x8A15010B' = @($true, 'Windows restarts to finish', 'restart')
+        '0x8A15010E' = @($true, 'a newer version is already installed')
+        '0x8A150014' = @($false, 'winget no longer finds this app')
+        '0x8A15002B' = @($false, 'no update fits this install - update it from the app')
+        '0x8A150011' = @($false, 'the download failed its checksum - try again later')
+        '0x8A150101' = @($false, 'the app is still running - close it and try again')
+        '0x8A150102' = @($false, 'another installation is running - try again later')
+        '0x8A150103' = @($false, 'a file is in use - close the app and try again')
+        '0x8A150105' = @($false, 'the disk is full')
+        '0x8A150107' = @($false, 'the installer needs an internet connection')
+        '0x8A15010A' = @($false, 'restart Windows, then try again')
+        '0x8A15010C' = @($false, 'the installation was cancelled')
+        '0x8A15010F' = @($false, 'blocked by a policy on this PC')
+        '0x8A150111' = @($false, 'the app is in use by another app')
+        '0x800704C7' = @($false, 'the administrator prompt was declined')
+        '0x80072EE7' = @($false, 'download failed - server not found (DNS, VPN or firewall)')
+        '0x80072EFD' = @($false, 'download failed - could not reach the server')
+        '0x80072EE2' = @($false, 'download failed - the connection timed out')
+    }
+    if ($known.ContainsKey($hex)) { return @{ Ok = $known[$hex][0]; Note = $known[$hex][1]; Code = $hex; Restart = ($known[$hex].Count -gt 2) } }
+    return @{ Ok = $false; Note = 'winget exit code ' + $hex; Code = $hex }
+}
+
 function Get-WingetUpdates {
+    try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch { }
     $raw = & winget.exe upgrade 2>&1
     $lines = @($raw | ForEach-Object { "$_" })
     $dashIdx = -1
@@ -4507,11 +4692,16 @@ function Get-WingetUpdates {
     }
     $items = @()
     if ($dashIdx -gt 0) {
-        $header = $lines[$dashIdx - 1]
-        $posId = $header.IndexOf('Id')
-        $posVer = $header.IndexOf('Version')
-        $posAvail = $header.IndexOf('Available')
-        $posSrc = $header.IndexOf('Source')
+        # winget draws a spinner with carriage returns on the header line: keep what follows the last one
+        $header = ($lines[$dashIdx - 1] -split "`r")[-1]
+        # Columns from where the header's words start, whatever language winget prints them in
+        # (Name Id Version Available Source in English, Ad Kimlik Surum Kullanilabilir Kaynak in Turkish...)
+        $starts = @([regex]::Matches($header, '(?<=^|\s)\S') | ForEach-Object { $_.Index })
+        if ($starts.Count -lt 4) { return ,@() }
+        $posId = $starts[1]
+        $posVer = $starts[2]
+        $posAvail = $starts[3]
+        $posSrc = if ($starts.Count -ge 5) { $starts[4] } else { -1 }
         
         for ($i = $dashIdx + 1; $i -lt $lines.Count; $i++) {
             $l = $lines[$i]
@@ -4525,10 +4715,14 @@ function Get-WingetUpdates {
                 } else {
                     $l.Substring($posAvail).Trim()
                 }
+                # Footer lines (translated in other languages) fall apart into odd cells - skip those
+                if ($id -notmatch '^[\w][\w.+-]*$' -or $avail -notmatch '^\S+$') { continue }
                 if ($name -and $id -and $avail -and $avail -ne 'Unknown' -and $avail -ne $ver) {
+                    $src = if ($posSrc -gt 0 -and $l.Length -gt $posSrc) { $l.Substring($posSrc).Trim() } else { '' }
                     $items += [pscustomobject]@{
                         Name = $name
                         Id = $id
+                        Source = $src
                         Version = if ($ver -eq 'Unknown' -or -not $ver) { 'Current' } else { $ver }
                         Available = $avail
                     }
@@ -4724,6 +4918,7 @@ while ($true) {
 
     $successfulUpdates = @()
     $failedUpdates = @()
+    $doneApps = @()
     # Whatever hosts this window is updated last, after everything else is done
     $toUpgrade = @(@($toUpgrade | Where-Object { -not (Test-HostsSwarlex $_.Id) }) + @($toUpgrade | Where-Object { Test-HostsSwarlex $_.Id }))
 
@@ -4742,6 +4937,16 @@ while ($true) {
             exit 42
         }
         
+        # Update Guard turns Spotify's Update folder into a locked file, which also stops Spotify's own
+        # installer: it exits as if it had worked and nothing changes
+        if ($targetApp.Id -eq 'Spotify.Spotify' -and (Test-Path -LiteralPath (Join-Path $env:LOCALAPPDATA 'Spotify\Update') -PathType Leaf)) {
+            Write-Host ($ind + '  [!] Skipped: Update Guard is on, which blocks Spotify updates.') -ForegroundColor Yellow
+            Write-Host ($ind + '      Spotify > [3] Update Guard unlocks it; re-apply Spicetify afterwards.') -ForegroundColor DarkGray
+            $failedUpdates += ($targetApp.Name + ' (Update Guard)')
+            Write-Host ''
+            continue
+        }
+
         $running = Get-AppProcesses $targetApp.Name $targetApp.Id
         if ($running.Count -gt 0) {
             Write-Host ($ind + '    [!] Closing running instances of ' + $targetApp.Name + '...') -ForegroundColor Yellow
@@ -4760,18 +4965,46 @@ while ($true) {
         
         # Through a file, not a pipe: installers that start their app afterwards (Spotify does) would
         # otherwise keep the pipe open and the updater would wait until that app is closed
-        $procExit = Invoke-Tool 'winget' ('upgrade --id ' + $targetApp.Id + ' -e --accept-package-agreements --accept-source-agreements --disable-interactivity')
-        
-        if ($procExit -eq 0) {
-            Write-Host ($ind + '  [+] ' + $targetApp.Name + ' successfully updated.') -ForegroundColor Green
+        $procExit = Invoke-Tool 'winget' (Get-UpgradeArgs $targetApp)
+        $res = Get-WingetResult $procExit
+        if ($res.Ok) {
+            $msg = '  [+] ' + $targetApp.Name + ' - winget finished'
+            if ($res.Note) { $msg += ' (' + $res.Note + ')' }
+            Write-Host ($ind + (Format-Fit $msg 0)) -ForegroundColor Green
             $successfulUpdates += $targetApp.Name
-            if (Get-Command Write-History -ErrorAction SilentlyContinue) {
-                Write-History 'Winget Upgrade' ($targetApp.Name + ' [' + $targetApp.Id + ']')
-            }
+            # after a restart-needed result the new version only shows once Windows has restarted
+            if ($res.Restart) { Write-History 'Winget Upgrade' ($targetApp.Name + ' [' + $targetApp.Id + '] ' + $targetApp.Available + ' - restart to finish') }
+            else { $doneApps += $targetApp }
         } else {
-            Write-Host ($ind + '  [x] Failed to update ' + $targetApp.Name + ' (Exit code: ' + $procExit + ')') -ForegroundColor Red
-            Write-Log 'ERROR' ('winget could not upgrade ' + $targetApp.Name + ' [' + $targetApp.Id + '], exit code ' + $procExit)
+            Write-Host ($ind + (Format-Fit ('  [x] ' + $targetApp.Name + ' was not updated:') 0)) -ForegroundColor Red
+            Write-Host ($ind + (Format-Fit ('      ' + $res.Note) 0)) -ForegroundColor DarkGray
+            Write-Log 'ERROR' ('winget could not upgrade ' + $targetApp.Name + ' [' + $targetApp.Id + ']: ' + $res.Note + ' [' + $res.Code + ']')
+            Write-History 'Winget Upgrade' ($targetApp.Name + ' [' + $targetApp.Id + '] failed - ' + $res.Note)
             $failedUpdates += $targetApp.Name
+        }
+        Write-Host ''
+    }
+
+    # An installer can end with "success" and still leave the old version in place. Ask winget again:
+    # whatever it still offers at the same version was not updated.
+    if ($doneApps.Count -gt 0) {
+        Write-Host ($ind + '  [*] Checking the installed versions...') -ForegroundColor Cyan
+        $still = Get-WingetUpdates
+        foreach ($app in $doneApps) {
+            $left = @($still | Where-Object { $_.Id -eq $app.Id -and $_.Available -eq $app.Available })
+            if ($left.Count) {
+                Write-Host ($ind + (Format-Fit ('  [x] ' + $app.Name + ' was not updated:') 0)) -ForegroundColor Red
+                Write-Host ($ind + (Format-Fit ('      the installer finished, but ' + $left[0].Version + ' is still installed') 0)) -ForegroundColor DarkGray
+                Write-Log 'ERROR' ('winget upgrade of ' + $app.Name + ' [' + $app.Id + '] finished but the version did not change')
+                Write-History 'Winget Upgrade' ($app.Name + ' [' + $app.Id + '] failed - version unchanged')
+                $okList = New-Object Collections.ArrayList (, @($successfulUpdates))
+                $okList.Remove($app.Name)
+                $successfulUpdates = @($okList)
+                $failedUpdates += $app.Name
+            } else {
+                Write-Host ($ind + '  [+] ' + $app.Name + ' updated to ' + $app.Available + '.') -ForegroundColor Green
+                Write-History 'Winget Upgrade' ($app.Name + ' [' + $app.Id + '] ' + $app.Version + ' -> ' + $app.Available)
+            }
         }
         Write-Host ''
     }

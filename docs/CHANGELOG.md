@@ -2,6 +2,23 @@
 
 All notable changes. Downloads: [Releases](https://github.com/swarlex/SwarlexManager/releases).
 
+## 1.2.0
+### Added
+- Backups include what Spicetify Marketplace installed (themes, extensions, snippets). Marketplace keeps them
+  in Spotify's own browser database, which backups left out, so they did not come back after a restore.
+- *Restore Profile* lists the backups on the Desktop, in Downloads and in Documents, newest first, and lets
+  you pick one; a backup copied from another PC no longer has to be moved to the Desktop first.
+
+### Fixed
+- *Update Guard* never finished locking Spotify updates: it always ended with "The Update folder is in use".
+- *App Updater* reported apps as updated when the installer had finished without changing the version; it
+  now checks the installed version afterwards and says what went wrong, in plain words, when winget fails.
+- *App Updater* skips Spotify while Update Guard is on (the lock also stops Spotify's own installer) and
+  says so, instead of reporting it as updated.
+- *App Updater* found no updates when winget printed its table in another language than English.
+- Backups go to the Desktop Explorer shows, also when it is on OneDrive or has a translated name.
+- *What's new* in *Settings > [8] Swarlex Update* no longer shows a stray `*` after italic text.
+
 ## 1.1.9
 ### Changed
 - Releases are published the way SwarlexBattery's are: from a release branch merged into `main` by pull
