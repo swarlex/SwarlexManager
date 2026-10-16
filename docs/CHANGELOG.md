@@ -2,7 +2,7 @@
 
 All notable changes. Downloads: [Releases](https://github.com/swarlex/SwarlexManager/releases).
 
-## Unreleased
+## 1.2.0
 ### Added
 - Backups include what Spicetify Marketplace installed (themes, extensions, snippets). Marketplace keeps them
   in Spotify's own browser database, which backups left out, so they did not come back after a restore.

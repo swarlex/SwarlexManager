@@ -18,7 +18,7 @@ chcp 65001 >nul <nul
 set "SWX_SELF=%~f0"
 set "SWX_SELF_NAME=%~nx0"
 :: Bump SWX_VERSION for every release; the release workflow refuses a tag that does not match it
-set "SWX_VERSION=1.1.9"
+set "SWX_VERSION=1.2.0"
 set "SWX_REPO=swarlex/SwarlexManager"
 set "SWX_BASE_PATH=%PATH%"
 set "GIT_TERMINAL_PROMPT=0"
